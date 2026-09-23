@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="fr" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elisée Melchi Mabondzo | Futur Ingénieur en Mécanique & Systèmes</title>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+    <style>
+        .page-section { display: none; }
+        .page-section.active { display: block; }
+    </style>
+</head>
+<body class="bg-slate-950 text-slate-100 font-sans selection:bg-sky-500 selection:text-white">
+
+    <!-- Header & Navigation -->
+    <header class="fixed top-0 left-0 right-0 z-50 bg-slate-900/80 backdrop-blur-md border-b border-slate-800">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <a href="#accueil" onclick="switchPage('accueil')" class="text-xl font-bold tracking-tight text-sky-400 flex items-center gap-2">
+                <i class="fa-solid fa-gears"></i> Elisée Melchi Mabondzo
+            </a>
+            <nav class="hidden md:flex items-center gap-8 text-sm font-medium">
+                <button onclick="switchPage('accueil')" id="nav-accueil" class="transition text-sky-400">Accueil</button>
+                <button onclick="switchPage('parcours')" id="nav-parcours" class="transition text-slate-400 hover:text-sky-400">Parcours & Diplôme</button>
+                <button onclick="switchPage('projets')" id="nav-projets" class="transition text-slate-400 hover:text-sky-400">Projets</button>
+                <button onclick="switchPage('cv')" id="nav-cv" class="transition text-slate-400 hover:text-sky-400">CV & Documents</button>
+                <button onclick="switchPage('contact')" id="nav-contact" class="transition text-slate-400 hover:text-sky-400">Contact</button>
+            </nav>
+            <button onclick="switchPage('contact')" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold px-5 py-2.5 rounded-xl transition shadow-lg shadow-sky-500/20">
+                Alternance 36 mois
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="pt-32 pb-20 max-w-7xl mx-auto px-6 min-h-screen">
+
+        <!-- PAGE 1: ACCUEIL -->
+        <section id="page-accueil" class="page-section active">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center min-h-[70vh]">
+                <div class="space-y-6">
+                    <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-sky-500/10 border border-sky-500/20 text-sky-400 text-xs font-semibold tracking-wide uppercase">
+                        <i class="fa-solid fa-circle-check text-[10px]"></i> Recherche Alternance 36 Mois • Rythme 3S/3S
+                    </div>
+                    <h1 class="text-4xl sm:text-6xl font-extrabold tracking-tight leading-tight">
+                        Futur Ingénieur en <span class="text-transparent bg-clip-text bg-gradient-to-r from-sky-400 to-indigo-400">Mécanique & Systèmes</span>
+                    </h1>
+                    <p class="text-slate-400 text-lg leading-relaxed">
+                        Diplômé d'un BUT Génie Industriel et Maintenance (IUT de Cherbourg) et étudiant en Génie Mécanique à l'Institut Polytechnique des Sciences Avancées (IPSA). J'allie expertise de terrain rigoureuse, conception mécanique avancée, maintenance 4.0 et intelligence artificielle appliquée.
+                    </p>
+                    <div class="flex flex-wrap gap-4 pt-4">
+                        <button onclick="switchPage('projets')" class="bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold px-6 py-3 rounded-xl transition flex items-center gap-2">
+                            Voir mes réalisations <i class="fa-solid fa-arrow-right"></i>
+                        </button>
+                        <button onclick="switchPage('cv')" class="border border-slate-700 hover:border-sky-500 text-slate-300 hover:text-sky-400 font-semibold px-6 py-3 rounded-xl transition">
+                            Consulter mon CV & Diplôme
+                        </button>
+                    </div>
+                </div>
+                <div class="flex justify-center">
+                    <div class="relative w-72 h-72 sm:w-96 sm:h-96 rounded-3xl overflow-hidden border-2 border-sky-500/30 shadow-2xl shadow-sky-500/10 bg-slate-900 flex items-center justify-center">
+                        <!-- Remplacement par une icône ou image de profil propre si le PDF ne fait pas office d'avatar -->
+                        <div class="text-center p-6">
+                            <i class="fa-solid fa-user-gear text-6xl text-sky-400 mb-4"></i>
+                            <h3 class="font-bold text-lg text-white">Elisée Melchi Mabondzo</h3>
+                            <p class="text-xs text-slate-400 mt-1">Ingénierie Mécanique & Maintenance</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Quick highlights -->
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mt-20">
+                <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
+                    <div class="text-sky-400 text-2xl mb-3"><i class="fa-solid fa-wrench"></i></div>
+                    <h3 class="text-lg font-bold mb-2">Conception & Mécanique</h3>
+                    <p class="text-slate-400 text-sm">Maîtrise des outils CAO/DAO (Catia V5, SolidWorks, Inventor, AutoCAD) et analyse par éléments finis (ANSYS, RDM).</p>
+                </div>
+                <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
+                    <div class="text-sky-400 text-2xl mb-3"><i class="fa-solid fa-industry"></i></div>
+                    <h3 class="text-lg font-bold mb-2">Maintenance & Lean</h3>
+                    <p class="text-slate-400 text-sm">2 ans d'expérience terrain en alternance (Kermené). Pilotage GMAO, TRS, AMDEC, 5S, Kaizen et sûreté de fonctionnement.</p>
+                </div>
+                <div class="bg-slate-900/50 border border-slate-800 p-6 rounded-2xl">
+                    <div class="text-sky-400 text-2xl mb-3"><i class="fa-solid fa-robot"></i></div>
+                    <h3 class="text-lg font-bold mb-2">Digitalisation & IA</h3>
+                    <p class="text-slate-400 text-sm">Création de la plateforme KTPE+ et des prototypes GMAO (V0, VITA, VITA V1) couplés au méta-moteur KIMPA.</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 2: PARCOURS & DIPLÔME -->
+        <section id="page-parcours" class="page-section">
+            <div class="max-w-4xl mx-auto space-y-12">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight mb-4">Parcours & Formations</h2>
+                    <p class="text-slate-400">Une double compétence alliant la solide base opérationnelle de l'IUT et l'ingénierie avancée en mécanique à l'IPSA.</p>
+                </div>
+
+                <div class="space-y-8 border-l-2 border-slate-800 pl-6 ml-2">
+                    <div class="relative">
+                        <div class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-sky-500 border-4 border-slate-950"></div>
+                        <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">2026 – 2029</span>
+                        <h3 class="text-xl font-bold mt-1">Cycle Ingénieur en Génie Mécanique</h3>
+                        <h4 class="text-slate-400 text-sm font-medium">Institut Polytechnique des Sciences Avancées (IPSA)</h4>
+                        <p class="text-slate-400 text-sm mt-3 leading-relaxed">
+                            Formations approfondies en conception et calcul de structures, CAO (Catia V5, SolidWorks), simulation numérique (ANSYS mechanical, Abaqus), RDM, résistance des matériaux et programmation.
+                        </p>
+                    </div>
+
+                    <div class="relative">
+                        <div class="absolute -left-[31px] top-0 w-4 h-4 rounded-full bg-sky-500 border-4 border-slate-950"></div>
+                        <span class="text-xs font-semibold text-sky-400 uppercase tracking-wider">2023 – 2026</span>
+                        <h3 class="text-xl font-bold mt-1">BUT Génie Industriel et Maintenance</h3>
+                        <h4 class="text-slate-400 text-sm font-medium">IUT de Cherbourg-en-Cotentin (Université de Caen Normandie)</h4>
+                        <p class="text-slate-400 text-sm mt-3 leading-relaxed">
+                            Parcours Ingénierie des systèmes pluritechniques. Mécanique générale, thermodynamique, électrotechnique, automatisme et amélioration continue.
+                        </p>
+                        <div class="mt-4 p-4 bg-slate-900 border border-slate-800 rounded-xl flex items-center justify-between">
+                            <div class="flex items-center gap-3">
+                                <i class="fa-solid fa-graduation-cap text-sky-400 text-xl"></i>
+                                <div>
+                                    <p class="text-sm font-semibold">Attestation de réussite - BUT GIM</p>
+                                    <p class="text-xs text-slate-400">Délivré en juillet 2026 (180 crédits ECTS)</p>
+                                </div>
+                            </div>
+                            <button onclick="switchPage('cv')" class="text-xs bg-slate-800 hover:bg-slate-700 text-sky-400 px-3 py-1.5 rounded-lg transition font-medium">Voir le diplôme</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Expérience terrain -->
+                <div class="pt-8 border-t border-slate-800">
+                    <h3 class="text-2xl font-bold tracking-tight mb-6">Expérience Professionnelle</h3>
+                    <div class="bg-slate-900 border border-slate-800 p-6 rounded-2xl">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4">
+                            <div>
+                                <h4 class="text-lg font-bold">Technicien de Maintenance en Alternance</h4>
+                                <p class="text-sky-400 text-sm">Kermené</p>
+                            </div>
+                            <span class="text-xs font-semibold bg-slate-800 text-slate-300 px-3 py-1 rounded-full mt-2 sm:mt-0 w-fit">Sept 2024 – Août 2026</span>
+                        </div>
+                        <ul class="space-y-2 text-sm text-slate-400 list-disc list-inside">
+                            <li>Maintenance mécanique et transmission : entraînements, guidages, roulements et réducteurs.</li>
+                            <li>Lecture de plans mécaniques, GMAO, rédaction de comptes-rendus d'intervention.</li>
+                            <li>Pilotage des projets de digitalisation de la maintenance (KTPE, KTPE+ et prototypes successifs).</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 3: PROJETS (CONTINUITÉ KTPE, GMAO-V0, VITA, VITA V1, KIMPA VITA) -->
+        <section id="page-projets" class="page-section">
+            <div class="max-w-6xl mx-auto space-y-12">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight mb-4">Projets & Continuité Numérique (KTPE & GMAO)</h2>
+                    <p class="text-slate-400">Découvrez l'évolution de mes projets industriels, de l'outil de base KTPE jusqu'aux prototypes GMAO et au couplage avec le méta-moteur KIMPA.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Project KTPE+ -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="text-sky-400 font-semibold text-xs uppercase tracking-wider mb-2">Fondation & Innovation 4.0</div>
+                            <h3 class="text-xl font-bold mb-3">Projet KTPE & KTPE+</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed mb-4">
+                                <b>L'outil de base :</b> Utilisation de Google Sheets pour centraliser et structurer les données de maintenance et les historiques d'intervention.<br>
+                                <b>L'automatisation intelligente :</b> Intégration d'un Gem de Gemini pour automatiser le nettoyage des données et assister l'analyse des pannes.<br>
+                                <b>Résultat terrain :</b> Un diagnostic fiabilisé des équipements et un gain de temps précieux. Projet mené chez Kermené, récompensé par un <b>prix d'honneur en entreprise</b>.
+                            </p>
+                        </div>
+                        <div class="bg-sky-500/10 border border-sky-500/20 p-3 rounded-xl text-xs text-sky-300 flex items-center gap-2">
+                            <i class="fa-solid fa-award"></i> Projet récompensé par un prix d'honneur en entreprise.
+                        </div>
+                    </div>
+
+                    <!-- Project GMAO V0 -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="text-sky-400 font-semibold text-xs uppercase tracking-wider mb-2">Prototypage Maintenance & Méthodes</div>
+                            <h3 class="text-xl font-bold mb-3">GMAO V0</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                                Première déclinaison logicielle autonome structurant le parc d'équipements, le suivi des pannes, les temps d'arrêt et le calcul des indicateurs de maintenance de premier niveau.
+                            </p>
+                        </div>
+                        <div>
+                            <a href="gmao-v0.html" target="_blank" class="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold px-4 py-2.5 rounded-xl transition text-sm">
+                                <i class="fa-solid fa-laptop-code"></i> Ouvrir le démonstrateur GMAO V0
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Project VITA -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="text-sky-400 font-semibold text-xs uppercase tracking-wider mb-2">Évolution GMAO</div>
+                            <h3 class="text-xl font-bold mb-3">VITA (Prototype)</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                                Évolution du prototype de GMAO intégrant une ergonomie épurée, un filtrage multicritère puissant et une centralisation rigoureuse des données d'exploitation industrielle.
+                            </p>
+                        </div>
+                        <div>
+                            <a href="vita.html" target="_blank" class="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold px-4 py-2.5 rounded-xl transition text-sm">
+                                <i class="fa-solid fa-laptop-code"></i> Ouvrir le démonstrateur VITA
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Project VITA V1 -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between">
+                        <div>
+                            <div class="text-sky-400 font-semibold text-xs uppercase tracking-wider mb-2">GMAO Opérationnelle & Pilotage</div>
+                            <h3 class="text-xl font-bold mb-3">VITA V1</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                                Version avancée de la GMAO incluant le planning préventif, la gestion des prestataires, la documentation technique, le calcul du MTTR/MTBF et l'export de données.
+                            </p>
+                        </div>
+                        <div>
+                            <a href="vitaV1.html" target="_blank" class="inline-flex items-center gap-2 bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold px-4 py-2.5 rounded-xl transition text-sm">
+                                <i class="fa-solid fa-laptop-code"></i> Ouvrir le démonstrateur VITA V1
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Project Kimpa VITA (Kimpa V1) -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col justify-between md:col-span-2 border-indigo-500/30">
+                        <div>
+                            <div class="text-indigo-400 font-semibold text-xs uppercase tracking-wider mb-2">Association Maintenance & Intelligence Artificielle</div>
+                            <h3 class="text-xl font-bold mb-3">Kimpa VITA (VITA V1 + KIMPA)</h3>
+                            <p class="text-slate-400 text-sm leading-relaxed mb-6">
+                                Aboutissement de la continuité : association directe entre l'application de GMAO VITA V1 et le méta-moteur d'analyse industrielle <b>KIMPA</b>. Permet de transférer instantanément le contexte de maintenance et l'historique pour réaliser des analyses de fiabilité (Weibull, Kaplan-Meier, détection de récurrences).
+                            </p>
+                        </div>
+                        <div class="flex flex-wrap gap-4">
+                            <a href="kimpa_vita.html" target="_blank" class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold px-4 py-2.5 rounded-xl transition text-sm">
+                                <i class="fa-solid fa-brain"></i> Ouvrir Kimpa VITA (Intégré)
+                            </a>
+                            <a href="https://meta-moteur-phm-roetna6yam6eemuosknhke.streamlit.app/#18-statut-global-de-l-etude" target="_blank" class="inline-flex items-center gap-2 border border-indigo-500/50 hover:border-indigo-400 text-indigo-300 px-4 py-2.5 rounded-xl transition text-sm font-semibold">
+                                <i class="fa-solid fa-external-link-alt"></i> Accéder au Méta-Moteur KIMPA (Streamlit)
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 4: CV & DOCUMENTS -->
+        <section id="page-cv" class="page-section">
+            <div class="max-w-4xl mx-auto space-y-12">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight mb-4">CV & Attestation de Diplôme</h2>
+                    <p class="text-slate-400">Consultez ou téléchargez mes documents officiels directement ci-dessous.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- CV Card -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col items-center text-center space-y-4">
+                        <div class="w-16 h-16 rounded-2xl bg-sky-500/10 text-sky-400 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-file-pdf"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold">Curriculum Vitae</h3>
+                            <p class="text-xs text-slate-400 mt-1">Elisée Melchi Mabondzo • Génie Mécanique</p>
+                        </div>
+                        <div class="w-full h-64 bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center p-4">
+                            <iframe src="CV.pdf.pdf" class="w-full h-full rounded border-0"></iframe>
+                        </div>
+                        <a href="CV.pdf.pdf" target="_blank" class="w-full bg-sky-500 hover:bg-sky-400 text-slate-950 font-semibold py-2.5 rounded-xl transition text-sm">
+                            <i class="fa-solid fa-download mr-2"></i> Télécharger le CV
+                        </a>
+                    </div>
+
+                    <!-- Diploma Card -->
+                    <div class="bg-slate-900 border border-slate-800 rounded-2xl p-6 flex flex-col items-center text-center space-y-4">
+                        <div class="w-16 h-16 rounded-2xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center text-2xl">
+                            <i class="fa-solid fa-certificate"></i>
+                        </div>
+                        <div>
+                            <h3 class="text-lg font-bold">Attestation BUT GIM</h3>
+                            <p class="text-xs text-slate-400 mt-1">Université de Caen Normandie - IUT Grand Ouest</p>
+                        </div>
+                        <div class="w-full h-64 bg-slate-950 rounded-xl overflow-hidden border border-slate-800 flex items-center justify-center p-2">
+                            <iframe src="_home_decoupenotes_STABLE__Traitement__BUISP3-112_22313113.pdf" class="w-full h-full rounded border-0"></iframe>
+                        </div>
+                        <a href="_home_decoupenotes_STABLE__Traitement__BUISP3-112_22313113.pdf" target="_blank" class="w-full border border-slate-700 hover:border-sky-500 text-slate-300 hover:text-sky-400 font-semibold py-2.5 rounded-xl transition text-sm">
+                            <i class="fa-solid fa-eye mr-2"></i> Voir le Diplôme Officiel
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- PAGE 5: CONTACT -->
+        <section id="page-contact" class="page-section">
+            <div class="max-w-3xl mx-auto space-y-8">
+                <div>
+                    <h2 class="text-3xl font-bold tracking-tight mb-4">Me Contacter</h2>
+                    <p class="text-slate-400">Je suis à la recherche d'une alternance de 36 mois en tant qu'Apprenti Ingénieur en Mécanique / Systèmes. Échangeons ensemble !</p>
+                </div>
+
+                <div class="bg-slate-900 border border-slate-800 rounded-2xl p-8 space-y-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                        <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-950 border border-slate-800">
+                            <div class="text-sky-400 text-xl"><i class="fa-solid fa-phone"></i></div>
+                            <div>
+                                <div class="text-xs text-slate-400">Téléphone</div>
+                                <a href="tel:+33754026752" class="text-sm font-semibold hover:text-sky-400">+33 7 54 02 67 52</a>
+                            </div>
+                        </div>
+                        <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-950 border border-slate-800">
+                            <div class="text-sky-400 text-xl"><i class="fa-solid fa-envelope"></i></div>
+                            <div>
+                                <div class="text-xs text-slate-400">E-mail</div>
+                                <a href="mailto:eliseemelchi@gmail.com" class="text-sm font-semibold hover:text-sky-400">eliseemelchi@gmail.com</a>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="flex items-center gap-4 p-4 rounded-xl bg-slate-950 border border-slate-800">
+                        <div class="text-sky-400 text-xl"><i class="fa-brands fa-linkedin"></i></div>
+                        <div>
+                            <div class="text-xs text-slate-400">LinkedIn</div>
+                            <a href="https://www.linkedin.com/in/elisee-mabondzo-79a887247" target="_blank" class="text-sm font-semibold hover:text-sky-400">linkedin.com/in/elisée-mabondzo-79a887247</a>
+                        </div>
+                    </div>
+
+                    <div class="pt-4 text-center">
+                        <a href="mailto:eliseemelchi@gmail.com" class="inline-block bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold px-8 py-3.5 rounded-xl transition shadow-lg shadow-sky-500/20">
+                            Envoyer un message direct
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-slate-800 py-8 text-center text-slate-500 text-sm">
+        <p>&copy; 2026 Elisée Melchi Mabondzo — Tous droits réservés.</p>
+    </footer>
+
+    <!-- Script de navigation multi-pages fluide -->
+    <script>
+        function switchPage(pageId) {
+            document.querySelectorAll('.page-section').forEach(section => {
+                section.classList.remove('active');
+            });
+            document.querySelectorAll('nav button').forEach(btn => {
+                btn.classList.remove('text-sky-400');
+                btn.classList.add('text-slate-400');
+            });
+            document.getElementById('page-' + pageId).classList.add('active');
+            
+            const navBtn = document.getElementById('nav-' + pageId);
+            if(navBtn) {
+                navBtn.classList.remove('text-slate-400');
+                navBtn.classList.add('text-sky-400');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    </script>
+</body>
+</html>
