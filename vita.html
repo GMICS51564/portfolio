@@ -1,0 +1,5717 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>VITA — GMAO Maintenance & Méthodes</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: Inter, ui-sans-serif, system-ui, -apple-system,
+                BlinkMacSystemFont, "Segoe UI", sans-serif;
+        }
+
+        ::-webkit-scrollbar {
+            width: 7px;
+            height: 7px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #020617;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 999px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+
+        .glass {
+            background: rgba(15, 23, 42, 0.78);
+            backdrop-filter: blur(10px);
+        }
+
+        .input-vita {
+            width: 100%;
+            background: #020617;
+            border: 1px solid #1e293b;
+            color: #e2e8f0;
+            border-radius: 0.5rem;
+            padding: 0.55rem 0.75rem;
+            outline: none;
+            font-size: 0.82rem;
+        }
+
+        .input-vita:focus {
+            border-color: #6366f1;
+            box-shadow: 0 0 0 2px rgba(99, 102, 241, 0.12);
+        }
+
+        .select-vita {
+            appearance: auto;
+        }
+
+        .btn-vita {
+            transition: all 0.15s ease;
+        }
+
+        .btn-vita:hover {
+            transform: translateY(-1px);
+        }
+
+        .nav-item {
+            transition: all 0.15s ease;
+        }
+
+        .nav-item.active {
+            background: rgba(99, 102, 241, 0.14);
+            color: #a5b4fc;
+            border-right: 2px solid #818cf8;
+        }
+
+        .fade-in {
+            animation: fadeIn 0.18s ease-out;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(3px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-slate-950 text-slate-200 min-h-screen">
+
+    <!-- =========================================================
+         APPLICATION
+    ========================================================== -->
+
+    <div id="app" class="flex min-h-screen">
+
+        <!-- =====================================================
+             SIDEBAR
+        ====================================================== -->
+
+        <aside
+            class="fixed inset-y-0 left-0 z-40 w-64 bg-slate-950 border-r border-slate-800 flex flex-col">
+
+            <!-- Logo -->
+            <div class="h-20 px-6 flex items-center border-b border-slate-800">
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="w-10 h-10 rounded-xl bg-indigo-600 flex items-center justify-center shadow-lg shadow-indigo-900/20">
+
+                        <i data-lucide="activity" class="w-5 h-5 text-white"></i>
+
+                    </div>
+
+                    <div>
+                        <div class="font-bold tracking-wide text-white text-lg">
+                            VITA
+                        </div>
+
+                        <div class="text-[10px] uppercase tracking-widest text-slate-500">
+                            Maintenance Intelligence
+                        </div>
+                    </div>
+
+                </div>
+
+            </div>
+
+            <!-- Navigation -->
+            <nav class="flex-1 p-3 space-y-1 overflow-y-auto">
+
+                <button
+                    onclick="switchTab('dashboard')"
+                    data-tab="dashboard"
+                    class="nav-item active w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-300">
+
+                    <i data-lucide="layout-dashboard" class="w-4 h-4"></i>
+
+                    Dashboard
+
+                </button>
+
+                <button
+                    onclick="switchTab('equipment')"
+                    data-tab="equipment"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-400">
+
+                    <i data-lucide="factory" class="w-4 h-4"></i>
+
+                    Parc équipements
+
+                </button>
+
+                <button
+                    onclick="switchTab('interventions')"
+                    data-tab="interventions"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-400">
+
+                    <i data-lucide="wrench" class="w-4 h-4"></i>
+
+                    Interventions
+
+                </button>
+
+                <button
+                    onclick="switchTab('history')"
+                    data-tab="history"
+                    class="nav-item w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium text-slate-400">
+
+                    <i data-lucide="bar-chart-3" class="w-4 h-4"></i>
+
+                    Historique & Analyse
+
+                </button>
+
+                <div class="pt-6 px-4 pb-2">
+                    <div class="text-[10px] uppercase tracking-widest text-slate-600">
+                        Évolution VITA
+                    </div>
+                </div>
+
+                <div
+                    class="mx-1 p-3 rounded-xl border border-dashed border-slate-800 bg-slate-900/30">
+
+                    <div class="flex items-center gap-2 text-slate-500 mb-2">
+
+                        <i data-lucide="sparkles" class="w-4 h-4"></i>
+
+                        <span class="text-xs font-semibold">
+                            V1+
+                        </span>
+
+                    </div>
+
+                    <div class="text-[11px] text-slate-600 leading-relaxed">
+                        Préventif, prestataires, base documentaire et assistant IA.
+                    </div>
+
+                </div>
+
+            </nav>
+
+            <!-- Bottom -->
+            <div class="p-4 border-t border-slate-800">
+
+                <button
+                    onclick="resetDemoData()"
+                    class="w-full flex items-center justify-center gap-2 px-3 py-2 rounded-lg text-xs text-slate-500 hover:text-white hover:bg-slate-900 transition">
+
+                    <i data-lucide="rotate-ccw" class="w-3.5 h-3.5"></i>
+
+                    Réinitialiser les données démo
+
+                </button>
+
+                <div class="mt-3 text-[10px] text-center text-slate-700">
+                    VITA V0.2
+                </div>
+
+            </div>
+
+        </aside>
+
+        <!-- =====================================================
+             MAIN
+        ====================================================== -->
+
+        <main class="ml-64 flex-1 min-w-0">
+
+            <!-- Header -->
+            <header
+                class="sticky top-0 z-30 h-20 glass border-b border-slate-800 flex items-center justify-between px-8">
+
+                <div>
+
+                    <div
+                        id="page-kicker"
+                        class="text-[10px] uppercase tracking-widest text-indigo-400 font-semibold mb-1">
+                        Maintenance
+                    </div>
+
+                    <h1
+                        id="page-title"
+                        class="text-xl font-bold text-white">
+                        Dashboard
+                    </h1>
+
+                </div>
+
+                <div class="flex items-center gap-3">
+
+                    <div
+                        class="hidden lg:flex items-center gap-2 text-xs text-slate-500 px-3 py-2 border border-slate-800 rounded-lg">
+
+                        <span class="w-2 h-2 rounded-full bg-emerald-500"></span>
+
+                        Système opérationnel
+
+                    </div>
+
+                    <button
+                        onclick="openNewInterventionModal()"
+                        class="btn-vita flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-sm font-semibold text-white shadow-lg shadow-indigo-900/20">
+
+                        <i data-lucide="plus" class="w-4 h-4"></i>
+
+                        Intervention
+
+                    </button>
+
+                </div>
+
+            </header>
+
+            <!-- Content -->
+            <div class="p-8">
+
+                <!-- =================================================
+                     GLOBAL FILTER BAR
+                ================================================== -->
+
+                <section
+                    id="global-filter-section"
+                    class="mb-8">
+
+                    <div
+                        class="rounded-2xl border border-slate-800 bg-slate-900/60 p-5">
+
+                        <div
+                            class="flex flex-col xl:flex-row xl:items-end xl:justify-between gap-5">
+
+                            <!-- Period -->
+                            <div class="flex-1">
+
+                                <div class="flex items-center gap-2 mb-3">
+
+                                    <i data-lucide="calendar-range"
+                                       class="w-4 h-4 text-indigo-400"></i>
+
+                                    <span
+                                        class="text-xs uppercase tracking-widest font-semibold text-slate-400">
+                                        Période d'analyse
+                                    </span>
+
+                                    <span
+                                        id="filter-context"
+                                        class="ml-2 text-xs text-indigo-300">
+                                    </span>
+
+                                </div>
+
+                                <div
+                                    class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-3">
+
+                                    <div>
+                                        <label class="block text-[10px] uppercase tracking-wider text-slate-600 mb-1">
+                                            Du
+                                        </label>
+
+                                        <input
+                                            id="filter-date-from"
+                                            type="date"
+                                            class="input-vita"
+                                            onchange="updateFilters()">
+                                    </div>
+
+                                    <div>
+                                        <label class="block text-[10px] uppercase tracking-wider text-slate-600 mb-1">
+                                            Au
+                                        </label>
+
+                                        <input
+                                            id="filter-date-to"
+                                            type="date"
+                                            class="input-vita"
+                                            onchange="updateFilters()">
+                                    </div>
+
+                                    <div class="xl:col-span-2">
+
+                                        <label class="block text-[10px] uppercase tracking-wider text-slate-600 mb-1">
+                                            Raccourcis
+                                        </label>
+
+                                        <div class="flex flex-wrap gap-2">
+
+                                            <button onclick="applyQuickPeriod('today')"
+                                                class="period-btn px-3 py-2 rounded-lg border border-slate-800 bg-slate-950 text-xs text-slate-400 hover:text-white hover:border-slate-700">
+                                                Aujourd'hui
+                                            </button>
+
+                                            <button onclick="applyQuickPeriod('7days')"
+                                                class="period-btn px-3 py-2 rounded-lg border border-slate-800 bg-slate-950 text-xs text-slate-400 hover:text-white hover:border-slate-700">
+                                                7 jours
+                                            </button>
+
+                                            <button onclick="applyQuickPeriod('30days')"
+                                                class="period-btn px-3 py-2 rounded-lg border border-slate-800 bg-slate-950 text-xs text-slate-400 hover:text-white hover:border-slate-700">
+                                                30 jours
+                                            </button>
+
+                                            <button onclick="applyQuickPeriod('month')"
+                                                class="period-btn px-3 py-2 rounded-lg border border-slate-800 bg-slate-950 text-xs text-slate-400 hover:text-white hover:border-slate-700">
+                                                Ce mois
+                                            </button>
+
+                                            <button onclick="applyQuickPeriod('previousMonth')"
+                                                class="period-btn px-3 py-2 rounded-lg border border-slate-800 bg-slate-950 text-xs text-slate-400 hover:text-white hover:border-slate-700">
+                                                Mois précédent
+                                            </button>
+
+                                            <button onclick="applyQuickPeriod('year')"
+                                                class="period-btn px-3 py-2 rounded-lg border border-slate-800 bg-slate-950 text-xs text-slate-400 hover:text-white hover:border-slate-700">
+                                                Cette année
+                                            </button>
+
+                                            <button onclick="clearDateFilters()"
+                                                class="px-3 py-2 rounded-lg border border-slate-800 bg-slate-950 text-xs text-slate-500 hover:text-white">
+                                                Tout l'historique
+                                            </button>
+
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <button
+                                onclick="resetAllFilters()"
+                                class="flex items-center justify-center gap-2 px-4 py-2.5 rounded-lg border border-slate-700 bg-slate-950 text-xs font-semibold text-slate-400 hover:text-white whitespace-nowrap">
+
+                                <i data-lucide="x" class="w-3.5 h-3.5"></i>
+
+                                Réinitialiser
+
+                            </button>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- =================================================
+                     DASHBOARD
+                ================================================== -->
+
+                <section id="view-dashboard" class="view fade-in">
+
+                    <!-- KPI -->
+                    <div
+                        class="grid grid-cols-2 xl:grid-cols-6 gap-4 mb-6">
+
+                        <div class="kpi-card"></div>
+                        <div class="kpi-card"></div>
+                        <div class="kpi-card"></div>
+                        <div class="kpi-card"></div>
+                        <div class="kpi-card"></div>
+                        <div class="kpi-card"></div>
+
+                    </div>
+
+                    <!-- Secondary KPI -->
+                    <div
+                        id="dashboard-secondary-kpis"
+                        class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                    </div>
+
+                    <!-- Main analysis -->
+                    <div
+                        class="grid grid-cols-1 xl:grid-cols-2 gap-6 mb-6">
+
+                        <div
+                            class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+
+                            <div class="flex justify-between items-center mb-5">
+
+                                <div>
+
+                                    <h2 class="font-bold text-white">
+                                        Équipements les plus sollicités
+                                    </h2>
+
+                                    <p class="text-xs text-slate-500 mt-1">
+                                        Sur la période sélectionnée
+                                    </p>
+
+                                </div>
+
+                                <i data-lucide="factory"
+                                   class="w-5 h-5 text-slate-600"></i>
+
+                            </div>
+
+                            <div id="dashboard-equipment-list"
+                                 class="space-y-3">
+                            </div>
+
+                        </div>
+
+                        <div
+                            class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+
+                            <div class="flex justify-between items-center mb-5">
+
+                                <div>
+
+                                    <h2 class="font-bold text-white">
+                                        Pareto des défaillances
+                                    </h2>
+
+                                    <p class="text-xs text-slate-500 mt-1">
+                                        Répartition des défaillances
+                                    </p>
+
+                                </div>
+
+                                <i data-lucide="bar-chart-3"
+                                   class="w-5 h-5 text-slate-600"></i>
+
+                            </div>
+
+                            <div id="dashboard-pareto"
+                                 class="space-y-3">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <!-- Recurrences -->
+                    <div
+                        class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 mb-6">
+
+                        <div class="flex items-center justify-between mb-5">
+
+                            <div>
+
+                                <h2 class="font-bold text-white flex items-center gap-2">
+
+                                    <i data-lucide="triangle-alert"
+                                       class="w-4 h-4 text-amber-400"></i>
+
+                                    Récurrences détectées
+
+                                </h2>
+
+                                <p class="text-xs text-slate-500 mt-1">
+                                    Défaillances répétées sur un même équipement
+                                </p>
+
+                            </div>
+
+                            <button
+                                onclick="switchTab('history')"
+                                class="text-xs text-indigo-400 hover:text-indigo-300">
+                                Voir l'analyse →
+                            </button>
+
+                        </div>
+
+                        <div id="dashboard-recurrences"
+                             class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-3">
+                        </div>
+
+                    </div>
+
+                    <!-- Recent interventions -->
+                    <div
+                        class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
+
+                        <div
+                            class="px-6 py-5 border-b border-slate-800 flex justify-between items-center">
+
+                            <div>
+
+                                <h2 class="font-bold text-white">
+                                    Dernières interventions
+                                </h2>
+
+                                <p class="text-xs text-slate-500 mt-1">
+                                    Interventions les plus récentes de la période
+                                </p>
+
+                            </div>
+
+                            <button
+                                onclick="switchTab('interventions')"
+                                class="text-xs text-indigo-400 hover:text-indigo-300">
+                                Toutes les interventions →
+                            </button>
+
+                        </div>
+
+                        <div class="overflow-x-auto">
+
+                            <table class="w-full text-left">
+
+                                <thead class="bg-slate-950/60">
+                                    <tr class="text-[10px] uppercase tracking-wider text-slate-600">
+                                        <th class="px-6 py-3">Intervention</th>
+                                        <th class="px-6 py-3">Équipement</th>
+                                        <th class="px-6 py-3">Type</th>
+                                        <th class="px-6 py-3">Défaillance</th>
+                                        <th class="px-6 py-3">Arrêt</th>
+                                        <th class="px-6 py-3">Statut</th>
+                                    </tr>
+                                </thead>
+
+                                <tbody id="dashboard-recent-body"></tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- =================================================
+                     EQUIPMENT
+                ================================================== -->
+
+                <section id="view-equipment"
+                         class="view hidden fade-in">
+
+                    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6">
+
+                        <div>
+
+                            <h2 class="text-xl font-bold text-white">
+                                Parc équipements
+                            </h2>
+
+                            <p class="text-sm text-slate-500 mt-1">
+                                Gestion et consultation du parc maintenance.
+                            </p>
+
+                        </div>
+
+                        <button
+                            onclick="openNewEquipmentModal()"
+                            class="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-sm font-semibold text-white">
+
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+
+                            Nouvel équipement
+
+                        </button>
+
+                    </div>
+
+                    <div
+                        class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 mb-5">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-5 gap-3">
+
+                            <div class="xl:col-span-2 relative">
+
+                                <i data-lucide="search"
+                                   class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600"></i>
+
+                                <input
+                                    id="equipment-search"
+                                    oninput="renderEquipmentTable()"
+                                    type="text"
+                                    placeholder="Rechercher un équipement..."
+                                    class="input-vita pl-9">
+
+                            </div>
+
+                            <select
+                                id="equipment-filter-line"
+                                onchange="renderEquipmentTable()"
+                                class="input-vita select-vita">
+                            </select>
+
+                            <select
+                                id="equipment-filter-state"
+                                onchange="renderEquipmentTable()"
+                                class="input-vita select-vita">
+                            </select>
+
+                            <select
+                                id="equipment-filter-criticality"
+                                onchange="renderEquipmentTable()"
+                                class="input-vita select-vita">
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                    <div
+                        class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
+
+                        <div class="overflow-x-auto">
+
+                            <table class="w-full text-left">
+
+                                <thead class="bg-slate-950/60">
+
+                                    <tr class="text-[10px] uppercase tracking-wider text-slate-600">
+
+                                        <th class="px-5 py-3">Équipement</th>
+                                        <th class="px-5 py-3">Désignation</th>
+                                        <th class="px-5 py-3">Ligne / Atelier</th>
+                                        <th class="px-5 py-3">Famille</th>
+                                        <th class="px-5 py-3">État</th>
+                                        <th class="px-5 py-3">Criticité</th>
+                                        <th class="px-5 py-3 text-right">Action</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody id="equipment-table-body"></tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- =================================================
+                     EQUIPMENT DETAIL
+                ================================================== -->
+
+                <section id="view-equipment-detail"
+                         class="view hidden fade-in">
+
+                    <button
+                        onclick="switchTab('equipment')"
+                        class="flex items-center gap-2 text-xs text-slate-500 hover:text-white mb-5">
+
+                        <i data-lucide="arrow-left" class="w-4 h-4"></i>
+
+                        Retour au parc
+
+                    </button>
+
+                    <div id="equipment-detail-content"></div>
+
+                </section>
+
+                <!-- =================================================
+                     INTERVENTIONS
+                ================================================== -->
+
+                <section id="view-interventions"
+                         class="view hidden fade-in">
+
+                    <div class="flex flex-col lg:flex-row lg:items-end justify-between gap-4 mb-6">
+
+                        <div>
+
+                            <h2 class="text-xl font-bold text-white">
+                                Interventions
+                            </h2>
+
+                            <p class="text-sm text-slate-500 mt-1">
+                                Historique opérationnel et recherche multicritère.
+                            </p>
+
+                        </div>
+
+                        <button
+                            onclick="openNewInterventionModal()"
+                            class="flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 rounded-lg text-sm font-semibold text-white">
+
+                            <i data-lucide="plus" class="w-4 h-4"></i>
+
+                            Nouvelle intervention
+
+                        </button>
+
+                    </div>
+
+                    <!-- Filters -->
+                    <div
+                        class="bg-slate-900/60 border border-slate-800 rounded-2xl p-5 mb-5">
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-6 gap-3">
+
+                            <div class="xl:col-span-2 relative">
+
+                                <i data-lucide="search"
+                                   class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-600"></i>
+
+                                <input
+                                    id="int-search"
+                                    oninput="renderInterventionsTable()"
+                                    type="text"
+                                    placeholder="N°, équipement, symptôme..."
+                                    class="input-vita pl-9">
+
+                            </div>
+
+                            <select
+                                id="int-filter-type"
+                                onchange="renderInterventionsTable()"
+                                class="input-vita select-vita">
+                            </select>
+
+                            <select
+                                id="int-filter-origin"
+                                onchange="renderInterventionsTable()"
+                                class="input-vita select-vita">
+                            </select>
+
+                            <select
+                                id="int-filter-status"
+                                onchange="renderInterventionsTable()"
+                                class="input-vita select-vita">
+                            </select>
+
+                            <select
+                                id="int-filter-equipment"
+                                onchange="renderInterventionsTable()"
+                                class="input-vita select-vita">
+                            </select>
+
+                        </div>
+
+                        <div
+                            id="intervention-filter-summary"
+                            class="mt-4 pt-4 border-t border-slate-800 text-xs text-slate-500">
+                        </div>
+
+                    </div>
+
+                    <!-- Table -->
+                    <div
+                        class="bg-slate-900/60 border border-slate-800 rounded-2xl overflow-hidden">
+
+                        <div class="overflow-x-auto">
+
+                            <table class="w-full text-left">
+
+                                <thead class="bg-slate-950/60">
+
+                                    <tr class="text-[10px] uppercase tracking-wider text-slate-600">
+
+                                        <th class="px-5 py-3">Intervention</th>
+                                        <th class="px-5 py-3">Équipement</th>
+                                        <th class="px-5 py-3">Type / Origine</th>
+                                        <th class="px-5 py-3">Symptôme / Défaillance</th>
+                                        <th class="px-5 py-3">Temps</th>
+                                        <th class="px-5 py-3">Statut</th>
+                                        <th class="px-5 py-3 text-right">Action</th>
+
+                                    </tr>
+
+                                </thead>
+
+                                <tbody id="interventions-table-body"></tbody>
+
+                            </table>
+
+                        </div>
+
+                    </div>
+
+                </section>
+
+                <!-- =================================================
+                     HISTORY / ANALYSIS
+                ================================================== -->
+
+                <section id="view-history"
+                         class="view hidden fade-in">
+
+                    <div class="mb-6">
+
+                        <h2 class="text-xl font-bold text-white">
+                            Historique & Analyse
+                        </h2>
+
+                        <p class="text-sm text-slate-500 mt-1">
+                            Analyse des interventions selon la période et les filtres sélectionnés.
+                        </p>
+
+                    </div>
+
+                    <!-- Analysis summary -->
+                    <div
+                        id="analysis-summary"
+                        class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                    </div>
+
+                    <!-- Pareto -->
+                    <div
+                        class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 mb-6">
+
+                        <div class="flex items-center justify-between mb-6">
+
+                            <div>
+
+                                <h3 class="font-bold text-white">
+                                    Pareto des défaillances
+                                </h3>
+
+                                <p class="text-xs text-slate-500 mt-1">
+                                    Classement des défaillances sur le périmètre analysé.
+                                </p>
+
+                            </div>
+
+                            <i data-lucide="bar-chart-3"
+                               class="w-5 h-5 text-slate-600"></i>
+
+                        </div>
+
+                        <div
+                            id="history-pareto-container"
+                            class="space-y-3">
+                        </div>
+
+                    </div>
+
+                    <!-- Recurrences -->
+                    <div
+                        class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 mb-6">
+
+                        <div class="flex items-center justify-between mb-6">
+
+                            <div>
+
+                                <h3 class="font-bold text-white">
+                                    Défaillances récurrentes
+                                </h3>
+
+                                <p class="text-xs text-slate-500 mt-1">
+                                    Même défaillance observée plusieurs fois sur un même équipement.
+                                </p>
+
+                            </div>
+
+                            <i data-lucide="triangle-alert"
+                               class="w-5 h-5 text-amber-400"></i>
+
+                        </div>
+
+                        <div
+                            id="history-recurrences-container"
+                            class="grid grid-cols-1 md:grid-cols-2 gap-3">
+                        </div>
+
+                    </div>
+
+                    <!-- Equipment ranking -->
+                    <div
+                        class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+
+                        <div class="mb-5">
+
+                            <h3 class="font-bold text-white">
+                                Performance du parc
+                            </h3>
+
+                            <p class="text-xs text-slate-500 mt-1">
+                                Équipements les plus sollicités sur la période.
+                            </p>
+
+                        </div>
+
+                        <div
+                            id="history-equipment-ranking"
+                            class="space-y-3">
+                        </div>
+
+                    </div>
+
+                </section>
+
+            </div>
+
+        </main>
+
+    </div>
+
+    <!-- =========================================================
+         MODAL — INTERVENTION
+    ========================================================== -->
+
+    <div
+        id="intervention-modal"
+        class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+
+        <div
+            class="w-full max-w-4xl max-h-[92vh] overflow-y-auto bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl">
+
+            <div
+                class="sticky top-0 z-10 px-6 py-5 border-b border-slate-800 bg-slate-950 flex items-center justify-between">
+
+                <div>
+
+                    <h3
+                        id="intervention-modal-title"
+                        class="font-bold text-white text-lg">
+                        Nouvelle intervention
+                    </h3>
+
+                    <p class="text-xs text-slate-500 mt-1">
+                        Enregistrer une opération de maintenance.
+                    </p>
+
+                </div>
+
+                <button
+                    onclick="closeModal('intervention-modal')"
+                    class="text-slate-500 hover:text-white">
+
+                    <i data-lucide="x" class="w-5 h-5"></i>
+
+                </button>
+
+            </div>
+
+            <form
+                id="intervention-form"
+                onsubmit="saveIntervention(event)"
+                class="p-6">
+
+                <input type="hidden" id="intervention-edit-id">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                    <div>
+                        <label class="label-vita">Équipement *</label>
+
+                        <select
+                            id="form-int-equipment"
+                            class="input-vita select-vita"
+                            required>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Type *</label>
+
+                        <select
+                            id="form-int-type"
+                            class="input-vita select-vita"
+                            required>
+
+                            <option value="Correctif">Correctif</option>
+                            <option value="Préventif">Préventif</option>
+                            <option value="Amélioratif">Amélioratif</option>
+                            <option value="Diagnostic">Diagnostic</option>
+
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Origine *</label>
+
+                        <select
+                            id="form-int-origin"
+                            class="input-vita select-vita"
+                            required>
+
+                            <option value="Interne">Interne</option>
+                            <option value="Externe">Externe</option>
+
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Statut *</label>
+
+                        <select
+                            id="form-int-status"
+                            class="input-vita select-vita"
+                            required>
+
+                            <option value="Terminée">Terminée</option>
+                            <option value="En cours">En cours</option>
+                            <option value="Planifiée">Planifiée</option>
+
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Date *</label>
+
+                        <input
+                            id="form-int-date"
+                            type="date"
+                            class="input-vita"
+                            required>
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Technicien / intervenant</label>
+
+                        <input
+                            id="form-int-technician"
+                            type="text"
+                            class="input-vita"
+                            placeholder="Nom de l'intervenant">
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Début</label>
+
+                        <input
+                            id="form-int-start"
+                            type="datetime-local"
+                            class="input-vita">
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Fin</label>
+
+                        <input
+                            id="form-int-end"
+                            type="datetime-local"
+                            class="input-vita">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="label-vita">Symptôme</label>
+
+                        <input
+                            id="form-int-symptom"
+                            type="text"
+                            class="input-vita"
+                            placeholder="Symptôme observé">
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Famille de défaillance</label>
+
+                        <input
+                            id="form-int-failure"
+                            type="text"
+                            class="input-vita"
+                            placeholder="Ex. Capteur, moteur, convoyeur...">
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Cause</label>
+
+                        <input
+                            id="form-int-cause"
+                            type="text"
+                            class="input-vita"
+                            placeholder="Cause identifiée">
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="label-vita">Action réalisée</label>
+
+                        <textarea
+                            id="form-int-action"
+                            rows="3"
+                            class="input-vita"
+                            placeholder="Décrire l'action réalisée..."></textarea>
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Durée intervention (min)</label>
+
+                        <input
+                            id="form-int-duration"
+                            type="number"
+                            min="0"
+                            class="input-vita"
+                            placeholder="120">
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Temps d'arrêt (min)</label>
+
+                        <input
+                            id="form-int-downtime"
+                            type="number"
+                            min="0"
+                            class="input-vita"
+                            placeholder="90">
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Coût (€)</label>
+
+                        <input
+                            id="form-int-cost"
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            class="input-vita"
+                            placeholder="0">
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Pièces utilisées</label>
+
+                        <input
+                            id="form-int-parts"
+                            type="text"
+                            class="input-vita"
+                            placeholder="Ex. roulement 6204">
+                    </div>
+
+                    <div class="md:col-span-2">
+
+                        <label class="label-vita">
+                            Commentaire
+                        </label>
+
+                        <textarea
+                            id="form-int-comment"
+                            rows="3"
+                            class="input-vita"
+                            placeholder="Informations complémentaires..."></textarea>
+
+                    </div>
+
+                </div>
+
+                <div class="flex justify-end gap-3 mt-7 pt-5 border-t border-slate-800">
+
+                    <button
+                        type="button"
+                        onclick="closeModal('intervention-modal')"
+                        class="px-4 py-2.5 rounded-lg border border-slate-800 text-sm text-slate-400 hover:text-white">
+
+                        Annuler
+
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold text-white">
+
+                        Enregistrer
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+    <!-- =========================================================
+         MODAL — EQUIPMENT
+    ========================================================== -->
+
+    <div
+        id="equipment-modal"
+        class="hidden fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4">
+
+        <div
+            class="w-full max-w-2xl bg-slate-950 border border-slate-800 rounded-2xl shadow-2xl">
+
+            <div
+                class="px-6 py-5 border-b border-slate-800 flex items-center justify-between">
+
+                <div>
+
+                    <h3 class="font-bold text-white text-lg">
+                        Nouvel équipement
+                    </h3>
+
+                    <p class="text-xs text-slate-500 mt-1">
+                        Ajouter un équipement au parc VITA.
+                    </p>
+
+                </div>
+
+                <button
+                    onclick="closeModal('equipment-modal')"
+                    class="text-slate-500 hover:text-white">
+
+                    <i data-lucide="x" class="w-5 h-5"></i>
+
+                </button>
+
+            </div>
+
+            <form
+                onsubmit="saveEquipment(event)"
+                class="p-6">
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+
+                    <div>
+                        <label class="label-vita">Code *</label>
+
+                        <input
+                            id="form-eq-code"
+                            type="text"
+                            class="input-vita"
+                            placeholder="C10"
+                            required>
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Désignation *</label>
+
+                        <input
+                            id="form-eq-name"
+                            type="text"
+                            class="input-vita"
+                            placeholder="Poussoir Handtmann"
+                            required>
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Ligne / Atelier</label>
+
+                        <input
+                            id="form-eq-line"
+                            type="text"
+                            class="input-vita"
+                            placeholder="Ligne 1">
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Famille</label>
+
+                        <input
+                            id="form-eq-category"
+                            type="text"
+                            class="input-vita"
+                            placeholder="Convoyage">
+                    </div>
+
+                    <div>
+                        <label class="label-vita">État</label>
+
+                        <select
+                            id="form-eq-state"
+                            class="input-vita select-vita">
+
+                            <option value="Opérationnel">Opérationnel</option>
+                            <option value="Dégradé">Dégradé</option>
+                            <option value="Arrêt">Arrêt</option>
+
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Criticité</label>
+
+                        <select
+                            id="form-eq-criticality"
+                            class="input-vita select-vita">
+
+                            <option value="Faible">Faible</option>
+                            <option value="Moyenne">Moyenne</option>
+                            <option value="Haute">Haute</option>
+                            <option value="Critique">Critique</option>
+
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Fabricant</label>
+
+                        <input
+                            id="form-eq-manufacturer"
+                            type="text"
+                            class="input-vita">
+                    </div>
+
+                    <div>
+                        <label class="label-vita">Modèle</label>
+
+                        <input
+                            id="form-eq-model"
+                            type="text"
+                            class="input-vita">
+                    </div>
+
+                </div>
+
+                <div class="flex justify-end gap-3 mt-7 pt-5 border-t border-slate-800">
+
+                    <button
+                        type="button"
+                        onclick="closeModal('equipment-modal')"
+                        class="px-4 py-2.5 rounded-lg border border-slate-800 text-sm text-slate-400 hover:text-white">
+
+                        Annuler
+
+                    </button>
+
+                    <button
+                        type="submit"
+                        class="px-5 py-2.5 rounded-lg bg-indigo-600 hover:bg-indigo-500 text-sm font-semibold text-white">
+
+                        Ajouter
+
+                    </button>
+
+                </div>
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         JAVASCRIPT
+    ========================================================== -->
+
+    <script>
+
+        /* ========================================================
+           VITA — CONFIGURATION
+        ======================================================== */
+
+        const VITA_VERSION = "0.2";
+
+        const STORAGE_EQUIPMENT = "vita_equipment_v02";
+        const STORAGE_INTERVENTIONS = "vita_interventions_v02";
+
+        /* ========================================================
+           DEMO DATA
+        ======================================================== */
+
+        const DEMO_EQUIPMENT = [
+
+            {
+                id: "eq-001",
+                code: "C9",
+                name: "Poussoir Handtmann",
+                line: "Ligne C9",
+                workshop: "Produits élaborés",
+                category: "Poussage",
+                state: "Opérationnel",
+                criticality: "Haute",
+                manufacturer: "Handtmann",
+                model: "VF 628",
+                commissioning: "2021-03-15"
+            },
+
+            {
+                id: "eq-002",
+                code: "C8",
+                name: "Poussoir Handtmann",
+                line: "Ligne C8",
+                workshop: "Produits élaborés",
+                category: "Poussage",
+                state: "Opérationnel",
+                criticality: "Haute",
+                manufacturer: "Handtmann",
+                model: "VF 612",
+                commissioning: "2020-09-10"
+            },
+
+            {
+                id: "eq-003",
+                code: "M1",
+                name: "Convoyeur modular",
+                line: "Ligne C9",
+                workshop: "Produits élaborés",
+                category: "Convoyage",
+                state: "Dégradé",
+                criticality: "Moyenne",
+                manufacturer: "Marel",
+                model: "Modular Conveyor",
+                commissioning: "2022-02-20"
+            },
+
+            {
+                id: "eq-004",
+                code: "OP1",
+                name: "Operculeuse Modini",
+                line: "Ligne C9",
+                workshop: "Produits élaborés",
+                category: "Conditionnement",
+                state: "Opérationnel",
+                criticality: "Critique",
+                manufacturer: "Modini",
+                model: "Sealpack",
+                commissioning: "2019-07-01"
+            },
+
+            {
+                id: "eq-005",
+                code: "M2",
+                name: "Convoyeur modular",
+                line: "Ligne C8",
+                workshop: "Produits élaborés",
+                category: "Convoyage",
+                state: "Opérationnel",
+                criticality: "Moyenne",
+                manufacturer: "Marel",
+                model: "Modular Conveyor",
+                commissioning: "2022-04-10"
+            },
+
+            {
+                id: "eq-006",
+                code: "SP1",
+                name: "Sealpack",
+                line: "Ligne C8",
+                workshop: "Produits élaborés",
+                category: "Conditionnement",
+                state: "Opérationnel",
+                criticality: "Haute",
+                manufacturer: "Sealpack",
+                model: "SP-200",
+                commissioning: "2020-11-18"
+            }
+
+        ];
+
+
+        const DEMO_INTERVENTIONS = [
+
+            {
+                id: "int-001",
+                number: "INT-2026-001",
+                eqId: "eq-001",
+                date: "2026-05-20",
+                startedAt: "2026-05-20T08:00",
+                endedAt: "2026-05-20T10:00",
+                type: "Correctif",
+                origin: "Interne",
+                status: "Terminée",
+                technician: "Maintenance",
+                symptom: "Vibration anormale",
+                failure: "Roulement",
+                cause: "Usure",
+                action: "Remplacement des roulements",
+                duration: 120,
+                downtime: 90,
+                cost: 240,
+                parts: "Roulement 6204",
+                comment: "Test fonctionnel concluant.",
+                createdAt: "2026-05-20T10:30",
+                updatedAt: "2026-05-20T10:30"
+            },
+
+            {
+                id: "int-002",
+                number: "INT-2026-002",
+                eqId: "eq-003",
+                date: "2026-06-04",
+                startedAt: "2026-06-04T09:00",
+                endedAt: "2026-06-04T10:00",
+                type: "Correctif",
+                origin: "Interne",
+                status: "Terminée",
+                technician: "Maintenance",
+                symptom: "Bruit métallique",
+                failure: "Taps convoyeur",
+                cause: "Usure mécanique",
+                action: "Remplacement des taps",
+                duration: 60,
+                downtime: 45,
+                cost: 90,
+                parts: "Taps convoyeur",
+                comment: "Après remplacement, fonctionnement normal.",
+                createdAt: "2026-06-04T10:10",
+                updatedAt: "2026-06-04T10:10"
+            },
+
+            {
+                id: "int-003",
+                number: "INT-2026-003",
+                eqId: "eq-001",
+                date: "2026-06-11",
+                startedAt: "2026-06-11T13:00",
+                endedAt: "2026-06-11T14:00",
+                type: "Correctif",
+                origin: "Interne",
+                status: "Terminée",
+                technician: "Maintenance",
+                symptom: "Positionnement incorrect",
+                failure: "Capteur",
+                cause: "Dérive capteur",
+                action: "Contrôle et réglage du capteur",
+                duration: 60,
+                downtime: 30,
+                cost: 35,
+                parts: "",
+                comment: "",
+                createdAt: "2026-06-11T14:10",
+                updatedAt: "2026-06-11T14:10"
+            },
+
+            {
+                id: "int-004",
+                number: "INT-2026-004",
+                eqId: "eq-002",
+                date: "2026-06-18",
+                startedAt: "2026-06-18T08:30",
+                endedAt: "2026-06-18T10:00",
+                type: "Préventif",
+                origin: "Interne",
+                status: "Terminée",
+                technician: "Maintenance",
+                symptom: "Contrôle périodique",
+                failure: "",
+                cause: "",
+                action: "Contrôle général et graissage",
+                duration: 90,
+                downtime: 0,
+                cost: 0,
+                parts: "",
+                comment: "",
+                createdAt: "2026-06-18T10:05",
+                updatedAt: "2026-06-18T10:05"
+            },
+
+            {
+                id: "int-005",
+                number: "INT-2026-005",
+                eqId: "eq-004",
+                date: "2026-07-03",
+                startedAt: "2026-07-03T07:00",
+                endedAt: "2026-07-03T09:30",
+                type: "Correctif",
+                origin: "Externe",
+                status: "Terminée",
+                technician: "Prestataire",
+                symptom: "Défaut de soudure",
+                failure: "Surchauffe",
+                cause: "Défaut système thermique",
+                action: "Diagnostic et remplacement composant",
+                duration: 150,
+                downtime: 130,
+                cost: 680,
+                parts: "Module thermique",
+                comment: "Intervention externe.",
+                createdAt: "2026-07-03T10:00",
+                updatedAt: "2026-07-03T10:00"
+            },
+
+            {
+                id: "int-006",
+                number: "INT-2026-006",
+                eqId: "eq-003",
+                date: "2026-07-14",
+                startedAt: "2026-07-14T10:00",
+                endedAt: "2026-07-14T11:30",
+                type: "Correctif",
+                origin: "Interne",
+                status: "Terminée",
+                technician: "Maintenance",
+                symptom: "Bruit métallique",
+                failure: "Taps convoyeur",
+                cause: "Usure mécanique",
+                action: "Remplacement des taps",
+                duration: 90,
+                downtime: 70,
+                cost: 110,
+                parts: "Taps convoyeur",
+                comment: "Deuxième intervention sur la même famille de défaut.",
+                createdAt: "2026-07-14T11:40",
+                updatedAt: "2026-07-14T11:40"
+            },
+
+            {
+                id: "int-007",
+                number: "INT-2026-007",
+                eqId: "eq-006",
+                date: "2026-08-02",
+                startedAt: "2026-08-02T14:00",
+                endedAt: "2026-08-02T15:00",
+                type: "Correctif",
+                origin: "Interne",
+                status: "Terminée",
+                technician: "Maintenance",
+                symptom: "Défaut de fermeture",
+                failure: "Capteur",
+                cause: "Dérive capteur",
+                action: "Réglage et test",
+                duration: 60,
+                downtime: 40,
+                cost: 45,
+                parts: "",
+                comment: "",
+                createdAt: "2026-08-02T15:10",
+                updatedAt: "2026-08-02T15:10"
+            },
+
+            {
+                id: "int-008",
+                number: "INT-2026-008",
+                eqId: "eq-001",
+                date: "2026-08-19",
+                startedAt: "2026-08-19T08:00",
+                endedAt: "2026-08-19T09:15",
+                type: "Correctif",
+                origin: "Interne",
+                status: "Terminée",
+                technician: "Maintenance",
+                symptom: "Positionnement incorrect",
+                failure: "Capteur",
+                cause: "Dérive capteur",
+                action: "Remplacement capteur",
+                duration: 75,
+                downtime: 60,
+                cost: 120,
+                parts: "Capteur position",
+                comment: "",
+                createdAt: "2026-08-19T09:20",
+                updatedAt: "2026-08-19T09:20"
+            },
+
+            {
+                id: "int-009",
+                number: "INT-2026-009",
+                eqId: "eq-005",
+                date: "2026-09-02",
+                startedAt: "2026-09-02T09:00",
+                endedAt: "2026-09-02T10:00",
+                type: "Préventif",
+                origin: "Interne",
+                status: "Terminée",
+                technician: "Maintenance",
+                symptom: "Contrôle périodique",
+                failure: "",
+                cause: "",
+                action: "Contrôle et nettoyage",
+                duration: 60,
+                downtime: 0,
+                cost: 0,
+                parts: "",
+                comment: "",
+                createdAt: "2026-09-02T10:05",
+                updatedAt: "2026-09-02T10:05"
+            },
+
+            {
+                id: "int-010",
+                number: "INT-2026-010",
+                eqId: "eq-002",
+                date: "2026-09-12",
+                startedAt: "2026-09-12T11:00",
+                endedAt: "2026-09-12T12:30",
+                type: "Correctif",
+                origin: "Interne",
+                status: "Terminée",
+                technician: "Maintenance",
+                symptom: "Défaut de dosage",
+                failure: "Capteur",
+                cause: "Dérive capteur",
+                action: "Remplacement et calibration",
+                duration: 90,
+                downtime: 75,
+                cost: 160,
+                parts: "Capteur dosage",
+                comment: "Calibration réalisée après remplacement.",
+                createdAt: "2026-09-12T12:40",
+                updatedAt: "2026-09-12T12:40"
+            }
+
+        ];
+
+
+        /* ========================================================
+           STATE
+        ======================================================== */
+
+        let filters = {
+            search: "",
+            dateFrom: "",
+            dateTo: "",
+            type: "",
+            origin: "",
+            status: "",
+            equipmentId: "",
+            line: ""
+        };
+
+        let currentTab = "dashboard";
+
+        let currentEquipmentId = null;
+
+
+        /* ========================================================
+           STORAGE
+        ======================================================== */
+
+        function getEquipment() {
+
+            const data = localStorage.getItem(STORAGE_EQUIPMENT);
+
+            if (!data) {
+                localStorage.setItem(
+                    STORAGE_EQUIPMENT,
+                    JSON.stringify(DEMO_EQUIPMENT)
+                );
+
+                return [...DEMO_EQUIPMENT];
+            }
+
+            try {
+                return JSON.parse(data);
+            } catch {
+                return [...DEMO_EQUIPMENT];
+            }
+        }
+
+
+        function getInterventions() {
+
+            const data = localStorage.getItem(STORAGE_INTERVENTIONS);
+
+            if (!data) {
+
+                localStorage.setItem(
+                    STORAGE_INTERVENTIONS,
+                    JSON.stringify(DEMO_INTERVENTIONS)
+                );
+
+                return [...DEMO_INTERVENTIONS];
+            }
+
+            try {
+                return JSON.parse(data);
+            } catch {
+                return [...DEMO_INTERVENTIONS];
+            }
+        }
+
+
+        function saveEquipmentData(data) {
+
+            localStorage.setItem(
+                STORAGE_EQUIPMENT,
+                JSON.stringify(data)
+            );
+
+        }
+
+
+        function saveInterventionData(data) {
+
+            localStorage.setItem(
+                STORAGE_INTERVENTIONS,
+                JSON.stringify(data)
+            );
+
+        }
+
+
+        function resetDemoData() {
+
+            if (!confirm("Réinitialiser toutes les données de démonstration VITA ?")) {
+                return;
+            }
+
+            localStorage.setItem(
+                STORAGE_EQUIPMENT,
+                JSON.stringify(DEMO_EQUIPMENT)
+            );
+
+            localStorage.setItem(
+                STORAGE_INTERVENTIONS,
+                JSON.stringify(DEMO_INTERVENTIONS)
+            );
+
+            resetAllFilters();
+
+            renderEverything();
+
+        }
+
+
+        /* ========================================================
+           UTILITIES
+        ======================================================== */
+
+        function todayISO() {
+
+            const d = new Date();
+
+            const offset =
+                d.getTimezoneOffset();
+
+            const local =
+                new Date(
+                    d.getTime() - offset * 60000
+                );
+
+            return local.toISOString().slice(0, 10);
+
+        }
+
+
+        function formatDate(date) {
+
+            if (!date) return "—";
+
+            const d = new Date(date + "T00:00:00");
+
+            return d.toLocaleDateString(
+                "fr-FR",
+                {
+                    day: "2-digit",
+                    month: "2-digit",
+                    year: "numeric"
+                }
+            );
+
+        }
+
+
+        function formatNumber(value) {
+
+            return new Intl.NumberFormat(
+                "fr-FR"
+            ).format(value || 0);
+
+        }
+
+
+        function formatHours(minutes) {
+
+            const hours =
+                (minutes || 0) / 60;
+
+            return hours.toLocaleString(
+                "fr-FR",
+                {
+                    maximumFractionDigits: 1
+                }
+            ) + " h";
+
+        }
+
+
+        function escapeHtml(value) {
+
+            if (value === null || value === undefined) {
+                return "";
+            }
+
+            return String(value)
+                .replaceAll("&", "&amp;")
+                .replaceAll("<", "&lt;")
+                .replaceAll(">", "&gt;")
+                .replaceAll('"', "&quot;")
+                .replaceAll("'", "&#039;");
+
+        }
+
+
+        function closeModal(id) {
+
+            document
+                .getElementById(id)
+                .classList
+                .add("hidden");
+
+        }
+
+
+        function openModal(id) {
+
+            document
+                .getElementById(id)
+                .classList
+                .remove("hidden");
+
+            lucide.createIcons();
+
+        }
+
+
+        /* ========================================================
+           FILTER ENGINE
+        ======================================================== */
+
+        function getFilteredInterventions() {
+
+            const interventions =
+                getInterventions();
+
+            const equipment =
+                getEquipment();
+
+            const search =
+                filters.search
+                    .trim()
+                    .toLowerCase();
+
+            return interventions.filter(i => {
+
+                const eq =
+                    equipment.find(
+                        e => e.id === i.eqId
+                    ) || {};
+
+                /* --------------------------------------------
+                   DATE
+                -------------------------------------------- */
+
+                const date =
+                    i.date || "";
+
+                const matchDateFrom =
+                    !filters.dateFrom ||
+                    date >= filters.dateFrom;
+
+                const matchDateTo =
+                    !filters.dateTo ||
+                    date <= filters.dateTo;
+
+                /* --------------------------------------------
+                   TEXT SEARCH
+                -------------------------------------------- */
+
+                const searchable = [
+
+                    i.number,
+                    eq.code,
+                    eq.name,
+                    i.symptom,
+                    i.failure,
+                    i.cause,
+                    i.action,
+                    i.technician,
+                    i.comment
+
+                ]
+                .filter(Boolean)
+                .join(" ")
+                .toLowerCase();
+
+                const matchSearch =
+                    !search ||
+                    searchable.includes(search);
+
+                /* --------------------------------------------
+                   BUSINESS FILTERS
+                -------------------------------------------- */
+
+                const matchType =
+                    !filters.type ||
+                    i.type === filters.type;
+
+                const matchOrigin =
+                    !filters.origin ||
+                    i.origin === filters.origin;
+
+                const matchStatus =
+                    !filters.status ||
+                    i.status === filters.status;
+
+                const matchEquipment =
+                    !filters.equipmentId ||
+                    i.eqId === filters.equipmentId;
+
+                const matchLine =
+                    !filters.line ||
+                    eq.line === filters.line;
+
+                return (
+
+                    matchDateFrom &&
+                    matchDateTo &&
+                    matchSearch &&
+                    matchType &&
+                    matchOrigin &&
+                    matchStatus &&
+                    matchEquipment &&
+                    matchLine
+
+                );
+
+            });
+
+        }
+
+
+        function updateFilters() {
+
+            filters.dateFrom =
+                document.getElementById(
+                    "filter-date-from"
+                ).value;
+
+            filters.dateTo =
+                document.getElementById(
+                    "filter-date-to"
+                ).value;
+
+            renderEverything();
+
+        }
+
+
+        function clearDateFilters() {
+
+            filters.dateFrom = "";
+            filters.dateTo = "";
+
+            document.getElementById(
+                "filter-date-from"
+            ).value = "";
+
+            document.getElementById(
+                "filter-date-to"
+            ).value = "";
+
+            renderEverything();
+
+        }
+
+
+        function resetAllFilters() {
+
+            filters = {
+                search: "",
+                dateFrom: "",
+                dateTo: "",
+                type: "",
+                origin: "",
+                status: "",
+                equipmentId: "",
+                line: ""
+            };
+
+            document.getElementById(
+                "filter-date-from"
+            ).value = "";
+
+            document.getElementById(
+                "filter-date-to"
+            ).value = "";
+
+            const ids = [
+
+                "int-search",
+                "int-filter-type",
+                "int-filter-origin",
+                "int-filter-status",
+                "int-filter-equipment"
+
+            ];
+
+            ids.forEach(id => {
+
+                const el =
+                    document.getElementById(id);
+
+                if (el) {
+                    el.value = "";
+                }
+
+            });
+
+            renderEverything();
+
+        }
+
+
+        function applyQuickPeriod(type) {
+
+            const now =
+                new Date();
+
+            const toISO =
+                date => {
+
+                    const d =
+                        new Date(date);
+
+                    const offset =
+                        d.getTimezoneOffset();
+
+                    const local =
+                        new Date(
+                            d.getTime()
+                            - offset * 60000
+                        );
+
+                    return local
+                        .toISOString()
+                        .slice(0, 10);
+
+                };
+
+
+            let from =
+                new Date(now);
+
+            let to =
+                new Date(now);
+
+
+            if (type === "today") {
+
+                from = new Date(now);
+                to = new Date(now);
+
+            }
+
+
+            if (type === "7days") {
+
+                from.setDate(
+                    now.getDate() - 6
+                );
+
+            }
+
+
+            if (type === "30days") {
+
+                from.setDate(
+                    now.getDate() - 29
+                );
+
+            }
+
+
+            if (type === "month") {
+
+                from =
+                    new Date(
+                        now.getFullYear(),
+                        now.getMonth(),
+                        1
+                    );
+
+            }
+
+
+            if (type === "previousMonth") {
+
+                from =
+                    new Date(
+                        now.getFullYear(),
+                        now.getMonth() - 1,
+                        1
+                    );
+
+                to =
+                    new Date(
+                        now.getFullYear(),
+                        now.getMonth(),
+                        0
+                    );
+
+            }
+
+
+            if (type === "year") {
+
+                from =
+                    new Date(
+                        now.getFullYear(),
+                        0,
+                        1
+                    );
+
+            }
+
+
+            filters.dateFrom =
+                toISO(from);
+
+            filters.dateTo =
+                toISO(to);
+
+            document.getElementById(
+                "filter-date-from"
+            ).value =
+                filters.dateFrom;
+
+            document.getElementById(
+                "filter-date-to"
+            ).value =
+                filters.dateTo;
+
+            renderEverything();
+
+        }
+
+
+        function getPeriodLabel() {
+
+            if (
+                !filters.dateFrom &&
+                !filters.dateTo
+            ) {
+                return "Tout l'historique";
+            }
+
+            if (
+                filters.dateFrom &&
+                filters.dateTo
+            ) {
+
+                return `${formatDate(filters.dateFrom)} → ${formatDate(filters.dateTo)}`;
+
+            }
+
+            if (filters.dateFrom) {
+
+                return `Depuis le ${formatDate(filters.dateFrom)}`;
+
+            }
+
+            return `Jusqu'au ${formatDate(filters.dateTo)}`;
+
+        }
+
+
+        /* ========================================================
+           KPI ENGINE
+        ======================================================== */
+
+        function calculateKPIs(list) {
+
+            const corrective =
+                list.filter(
+                    i => i.type === "Correctif"
+                );
+
+            const failures =
+                list.filter(
+                    i => i.failure
+                );
+
+            const downtime =
+                list.reduce(
+                    (sum, i) =>
+                        sum + Number(i.downtime || 0),
+                    0
+                );
+
+            const duration =
+                list.reduce(
+                    (sum, i) =>
+                        sum + Number(i.duration || 0),
+                    0
+                );
+
+            const completedCorrective =
+                corrective.filter(
+                    i => i.status === "Terminée"
+                );
+
+            const mttr =
+                completedCorrective.length
+                    ? completedCorrective.reduce(
+                        (sum, i) =>
+                            sum + Number(i.duration || 0),
+                        0
+                    ) / completedCorrective.length
+                    : null;
+
+
+            /*
+                V0.2 :
+                MTBF volontairement conservateur.
+
+                On utilise les jours couverts par la période
+                lorsqu'une période est explicitement définie.
+
+                Si aucune période n'est définie, on utilise
+                l'étendue temporelle réelle de l'historique.
+            */
+
+            const failureDates =
+                failures
+                    .map(i => i.date)
+                    .filter(Boolean)
+                    .sort();
+
+            let mtbf = null;
+
+            if (
+                failureDates.length >= 2
+            ) {
+
+                const first =
+                    new Date(
+                        failureDates[0] + "T00:00:00"
+                    );
+
+                const last =
+                    new Date(
+                        failureDates[failureDates.length - 1]
+                        + "T00:00:00"
+                    );
+
+                const elapsedHours =
+                    Math.max(
+                        1,
+                        (last - first)
+                        / 3600000
+                    );
+
+                mtbf =
+                    elapsedHours /
+                    Math.max(
+                        1,
+                        failures.length - 1
+                    );
+
+            }
+
+
+            const equipmentIds =
+                new Set(
+                    list.map(
+                        i => i.eqId
+                    )
+                );
+
+
+            const preventive =
+                list.filter(
+                    i => i.type === "Préventif"
+                );
+
+            const external =
+                list.filter(
+                    i => i.origin === "Externe"
+                );
+
+
+            return {
+
+                interventions: list.length,
+
+                failures:
+                    failures.length,
+
+                downtime,
+
+                duration,
+
+                mttr,
+
+                mtbf,
+
+                equipmentCount:
+                    equipmentIds.size,
+
+                corrective:
+                    corrective.length,
+
+                preventive:
+                    preventive.length,
+
+                external:
+                    external.length,
+
+                internal:
+                    list.filter(
+                        i => i.origin === "Interne"
+                    ).length
+
+            };
+
+        }
+
+
+        /* ========================================================
+           DATA QUALITY
+        ======================================================== */
+
+        function calculateDataQuality(list) {
+
+            if (!list.length) {
+
+                return {
+
+                    overall: 0,
+                    date: 0,
+                    failure: 0,
+                    cause: 0,
+                    action: 0,
+                    downtime: 0
+
+                };
+
+            }
+
+
+            const percentage =
+                predicate =>
+                    Math.round(
+                        (
+                            list.filter(predicate).length
+                            /
+                            list.length
+                        ) * 100
+                    );
+
+
+            const date =
+                percentage(
+                    i => !!i.date
+                );
+
+            const failure =
+                percentage(
+                    i => !!i.failure
+                );
+
+            const cause =
+                percentage(
+                    i => !!i.cause
+                );
+
+            const action =
+                percentage(
+                    i => !!i.action
+                );
+
+            const downtime =
+                percentage(
+                    i =>
+                        i.downtime !== undefined &&
+                        i.downtime !== null
+                );
+
+
+            const overall =
+                Math.round(
+                    (
+                        date +
+                        failure +
+                        cause +
+                        action +
+                        downtime
+                    ) / 5
+                );
+
+
+            return {
+                overall,
+                date,
+                failure,
+                cause,
+                action,
+                downtime
+            };
+
+        }
+
+
+        /* ========================================================
+           PARETO
+        ======================================================== */
+
+        function calculatePareto(list) {
+
+            const counts = {};
+
+            list.forEach(i => {
+
+                if (!i.failure) {
+                    return;
+                }
+
+                counts[i.failure] =
+                    (counts[i.failure] || 0) + 1;
+
+            });
+
+
+            const total =
+                Object.values(counts)
+                    .reduce(
+                        (a, b) => a + b,
+                        0
+                    );
+
+
+            let cumulative = 0;
+
+
+            return Object.entries(counts)
+
+                .sort(
+                    (a, b) =>
+                        b[1] - a[1]
+                )
+
+                .map(
+                    ([name, count]) => {
+
+                        const percentage =
+                            total
+                                ? (count / total) * 100
+                                : 0;
+
+                        cumulative +=
+                            percentage;
+
+                        return {
+
+                            name,
+                            count,
+                            percentage,
+                            cumulative
+
+                        };
+
+                    }
+                );
+
+        }
+
+
+        /* ========================================================
+           RECURRENCES
+        ======================================================== */
+
+        function detectRecurrences(list) {
+
+            const equipment =
+                getEquipment();
+
+            const results = [];
+
+
+            equipment.forEach(eq => {
+
+                const eqList =
+                    list.filter(
+                        i => i.eqId === eq.id
+                    );
+
+
+                const counts = {};
+
+                eqList.forEach(i => {
+
+                    if (!i.failure) {
+                        return;
+                    }
+
+                    counts[i.failure] =
+                        (counts[i.failure] || 0) + 1;
+
+                });
+
+
+                Object.entries(counts)
+                    .forEach(
+                        ([failure, count]) => {
+
+                            if (count >= 2) {
+
+                                const occurrences =
+                                    eqList
+
+                                        .filter(
+                                            i =>
+                                                i.failure === failure
+                                        )
+
+                                        .sort(
+                                            (a, b) =>
+                                                new Date(a.date)
+                                                -
+                                                new Date(b.date)
+                                        );
+
+
+                                const downtime =
+                                    occurrences.reduce(
+                                        (sum, i) =>
+                                            sum +
+                                            Number(i.downtime || 0),
+                                        0
+                                    );
+
+
+                                results.push({
+
+                                    eq,
+                                    failure,
+                                    count,
+                                    downtime,
+                                    firstDate:
+                                        occurrences[0]?.date,
+                                    lastDate:
+                                        occurrences[
+                                            occurrences.length - 1
+                                        ]?.date
+
+                                });
+
+                            }
+
+                        }
+                    );
+
+            });
+
+
+            return results.sort(
+                (a, b) =>
+                    b.count - a.count
+            );
+
+        }
+
+
+        /* ========================================================
+           EQUIPMENT ANALYSIS
+        ======================================================== */
+
+        function calculateEquipmentStats(list) {
+
+            const equipment =
+                getEquipment();
+
+
+            return equipment.map(eq => {
+
+                const interventions =
+                    list.filter(
+                        i => i.eqId === eq.id
+                    );
+
+
+                const failures =
+                    interventions.filter(
+                        i => i.failure
+                    );
+
+
+                const downtime =
+                    interventions.reduce(
+                        (sum, i) =>
+                            sum + Number(i.downtime || 0),
+                        0
+                    );
+
+
+                const corrective =
+                    interventions.filter(
+                        i =>
+                            i.type === "Correctif"
+                    );
+
+
+                /*
+                    Indice de surveillance V0.2.
+
+                    Ce n'est pas une criticité industrielle complète.
+                    C'est un indicateur interne basé sur :
+                    - fréquence des pannes
+                    - temps d'arrêt
+                    - criticité déclarée
+                */
+
+                let surveillance =
+                    failures.length * 15
+                    +
+                    downtime / 10;
+
+
+                if (eq.criticality === "Critique") {
+                    surveillance += 30;
+                }
+
+                if (eq.criticality === "Haute") {
+                    surveillance += 15;
+                }
+
+
+                return {
+
+                    eq,
+                    interventions:
+                        interventions.length,
+
+                    failures:
+                        failures.length,
+
+                    corrective:
+                        corrective.length,
+
+                    downtime,
+
+                    surveillance:
+                        Math.round(surveillance)
+
+                };
+
+            })
+
+            .filter(
+                x => x.interventions > 0
+            )
+
+            .sort(
+                (a, b) =>
+                    b.interventions
+                    -
+                    a.interventions
+            );
+
+        }
+
+
+        /* ========================================================
+           GLOBAL FILTER DISPLAY
+        ======================================================== */
+
+        function renderFilterContext() {
+
+            const label =
+                getPeriodLabel();
+
+            document.getElementById(
+                "filter-context"
+            ).textContent =
+                `• ${label}`;
+
+
+            const list =
+                getFilteredInterventions();
+
+            document.getElementById(
+                "intervention-filter-summary"
+            ).textContent =
+                `${formatNumber(list.length)} intervention(s) correspondent aux filtres actuels.`;
+
+        }
+
+
+        /* ========================================================
+           NAVIGATION
+        ======================================================== */
+
+        function switchTab(tab, equipmentId = null) {
+
+            currentTab = tab;
+
+            if (equipmentId) {
+                currentEquipmentId =
+                    equipmentId;
+            }
+
+
+            document
+                .querySelectorAll(".view")
+                .forEach(
+                    view =>
+                        view.classList.add("hidden")
+                );
+
+
+            const target =
+                document.getElementById(
+                    `view-${tab}`
+                );
+
+
+            if (target) {
+                target.classList.remove("hidden");
+            }
+
+
+            document
+                .querySelectorAll(".nav-item")
+                .forEach(
+                    item =>
+                        item.classList.remove("active")
+                );
+
+
+            const nav =
+                document.querySelector(
+                    `[data-tab="${tab}"]`
+                );
+
+
+            if (nav) {
+                nav.classList.add("active");
+            }
+
+
+            const titles = {
+
+                dashboard: [
+                    "Maintenance",
+                    "Dashboard"
+                ],
+
+                equipment: [
+                    "Parc",
+                    "Parc équipements"
+                ],
+
+                "equipment-detail": [
+                    "Parc",
+                    "Fiche équipement"
+                ],
+
+                interventions: [
+                    "Maintenance",
+                    "Interventions"
+                ],
+
+                history: [
+                    "Analyse",
+                    "Historique & Analyse"
+                ]
+
+            };
+
+
+            const title =
+                titles[tab]
+                ||
+                titles.dashboard;
+
+
+            document.getElementById(
+                "page-kicker"
+            ).textContent =
+                title[0];
+
+            document.getElementById(
+                "page-title"
+            ).textContent =
+                title[1];
+
+
+            renderEverything();
+
+        }
+
+
+        /* ========================================================
+           DASHBOARD
+        ======================================================== */
+
+        function renderDashboard() {
+
+            const list =
+                getFilteredInterventions();
+
+            const kpi =
+                calculateKPIs(list);
+
+            const quality =
+                calculateDataQuality(list);
+
+
+            const kpiCards = [
+
+                {
+                    label: "Équipements sollicités",
+                    value: kpi.equipmentCount,
+                    icon: "factory",
+                    detail: "sur la période"
+                },
+
+                {
+                    label: "Interventions",
+                    value: kpi.interventions,
+                    icon: "wrench",
+                    detail: "sur la période"
+                },
+
+                {
+                    label: "Pannes",
+                    value: kpi.failures,
+                    icon: "triangle-alert",
+                    detail: "défaillances renseignées"
+                },
+
+                {
+                    label: "Temps d'arrêt",
+                    value: formatHours(kpi.downtime),
+                    icon: "clock-3",
+                    detail: "cumulé"
+                },
+
+                {
+                    label: "MTTR",
+                    value:
+                        kpi.mttr !== null
+                            ? `${Math.round(kpi.mttr)} min`
+                            : "—",
+                    icon: "timer",
+                    detail:
+                        kpi.mttr !== null
+                            ? "correctifs terminés"
+                            : "données insuffisantes"
+                },
+
+                {
+                    label: "MTBF",
+                    value:
+                        kpi.mtbf !== null
+                            ? `${Math.round(kpi.mtbf)} h`
+                            : "—",
+                    icon: "activity",
+                    detail:
+                        kpi.mtbf !== null
+                            ? "estimation historique"
+                            : "données insuffisantes"
+                }
+
+            ];
+
+
+            document.querySelectorAll(
+                ".kpi-card"
+            ).forEach(
+                (card, index) => {
+
+                    const item =
+                        kpiCards[index];
+
+                    card.className =
+                        "bg-slate-900/60 border border-slate-800 rounded-2xl p-5";
+
+                    card.innerHTML = `
+
+                        <div class="flex items-start justify-between">
+
+                            <div>
+
+                                <div class="text-[10px] uppercase tracking-widest text-slate-600 mb-2">
+                                    ${item.label}
+                                </div>
+
+                                <div class="text-2xl font-bold text-white">
+                                    ${item.value}
+                                </div>
+
+                                <div class="text-[10px] text-slate-500 mt-1">
+                                    ${item.detail}
+                                </div>
+
+                            </div>
+
+                            <div class="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center">
+
+                                <i data-lucide="${item.icon}"
+                                   class="w-4 h-4 text-indigo-400"></i>
+
+                            </div>
+
+                        </div>
+
+                    `;
+
+                }
+            );
+
+
+            document.getElementById(
+                "dashboard-secondary-kpis"
+            ).innerHTML = `
+
+                <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-4">
+
+                    <div class="text-[10px] uppercase tracking-widest text-slate-600">
+                        Correctif
+                    </div>
+
+                    <div class="text-xl font-bold text-white mt-1">
+                        ${formatNumber(kpi.corrective)}
+                    </div>
+
+                </div>
+
+
+                <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-4">
+
+                    <div class="text-[10px] uppercase tracking-widest text-slate-600">
+                        Préventif
+                    </div>
+
+                    <div class="text-xl font-bold text-white mt-1">
+                        ${formatNumber(kpi.preventive)}
+                    </div>
+
+                </div>
+
+
+                <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-4">
+
+                    <div class="text-[10px] uppercase tracking-widest text-slate-600">
+                        Interventions externes
+                    </div>
+
+                    <div class="text-xl font-bold text-white mt-1">
+                        ${formatNumber(kpi.external)}
+                    </div>
+
+                </div>
+
+
+                <div class="bg-slate-900/40 border border-slate-800 rounded-xl p-4">
+
+                    <div class="flex justify-between">
+
+                        <div>
+
+                            <div class="text-[10px] uppercase tracking-widest text-slate-600">
+                                Qualité des données
+                            </div>
+
+                            <div class="text-xl font-bold text-white mt-1">
+                                ${quality.overall} %
+                            </div>
+
+                        </div>
+
+                        <div class="w-9 h-9 rounded-lg bg-slate-800 flex items-center justify-center">
+
+                            <i data-lucide="database"
+                               class="w-4 h-4 text-indigo-400"></i>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+
+            renderDashboardEquipment(list);
+
+            renderDashboardPareto(list);
+
+            renderDashboardRecurrences(list);
+
+            renderDashboardRecent(list);
+
+        }
+
+
+        function renderDashboardEquipment(list) {
+
+            const stats =
+                calculateEquipmentStats(list)
+                    .slice(0, 5);
+
+
+            const container =
+                document.getElementById(
+                    "dashboard-equipment-list"
+                );
+
+
+            if (!stats.length) {
+
+                container.innerHTML =
+                    emptyState(
+                        "Aucun équipement sollicité sur cette période."
+                    );
+
+                return;
+
+            }
+
+
+            container.innerHTML =
+                stats.map(
+                    s => `
+
+                    <div
+                        onclick="switchTab('equipment-detail', '${s.eq.id}')"
+                        class="p-3 rounded-xl border border-slate-800 bg-slate-950/60 hover:border-slate-700 cursor-pointer transition">
+
+                        <div class="flex justify-between items-center">
+
+                            <div>
+
+                                <div class="text-xs font-bold text-white">
+                                    ${escapeHtml(s.eq.code)}
+                                </div>
+
+                                <div class="text-[11px] text-slate-500">
+                                    ${escapeHtml(s.eq.name)}
+                                </div>
+
+                            </div>
+
+                            <div class="text-right">
+
+                                <div class="font-mono text-sm text-indigo-400">
+                                    ${s.interventions}
+                                </div>
+
+                                <div class="text-[10px] text-slate-600">
+                                    interventions
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        <div class="mt-3 flex gap-4 text-[10px] text-slate-500">
+
+                            <span>
+                                Pannes :
+                                <b class="text-slate-300">
+                                    ${s.failures}
+                                </b>
+                            </span>
+
+                            <span>
+                                Arrêt :
+                                <b class="text-slate-300">
+                                    ${formatHours(s.downtime)}
+                                </b>
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                `
+                ).join("");
+
+        }
+
+
+        function renderDashboardPareto(list) {
+
+            const pareto =
+                calculatePareto(list)
+                    .slice(0, 5);
+
+
+            const container =
+                document.getElementById(
+                    "dashboard-pareto"
+                );
+
+
+            if (!pareto.length) {
+
+                container.innerHTML =
+                    emptyState(
+                        "Pas de défaillance renseignée."
+                    );
+
+                return;
+
+            }
+
+
+            container.innerHTML =
+                pareto.map(
+                    p => `
+
+                    <div>
+
+                        <div class="flex justify-between text-xs mb-1">
+
+                            <span class="text-slate-300">
+                                ${escapeHtml(p.name)}
+                            </span>
+
+                            <span class="font-mono text-indigo-400">
+                                ${Math.round(p.percentage)} %
+                                (${p.count})
+                            </span>
+
+                        </div>
+
+                        <div class="w-full h-2 rounded-full bg-slate-950 overflow-hidden">
+
+                            <div
+                                class="h-full rounded-full bg-indigo-500"
+                                style="width:${Math.min(100, p.percentage)}%">
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `
+                ).join("");
+
+        }
+
+
+        function renderDashboardRecurrences(list) {
+
+            const recurrences =
+                detectRecurrences(list)
+                    .slice(0, 3);
+
+
+            const container =
+                document.getElementById(
+                    "dashboard-recurrences"
+                );
+
+
+            if (!recurrences.length) {
+
+                container.innerHTML =
+                    emptyState(
+                        "Aucune récurrence détectée."
+                    );
+
+                return;
+
+            }
+
+
+            container.innerHTML =
+                recurrences.map(
+                    r => `
+
+                    <div
+                        onclick="switchTab('equipment-detail', '${r.eq.id}')"
+                        class="p-4 rounded-xl border border-amber-900/50 bg-amber-950/10 hover:bg-amber-950/20 cursor-pointer">
+
+                        <div class="flex justify-between gap-3">
+
+                            <div>
+
+                                <div class="text-xs font-bold text-amber-300">
+                                    ${escapeHtml(r.eq.code)}
+                                    — ${escapeHtml(r.eq.name)}
+                                </div>
+
+                                <div class="text-[11px] text-slate-400 mt-1">
+                                    ${escapeHtml(r.failure)}
+                                </div>
+
+                            </div>
+
+                            <div class="text-right">
+
+                                <div class="text-sm font-bold text-amber-300">
+                                    ${r.count}
+                                </div>
+
+                                <div class="text-[9px] uppercase text-slate-600">
+                                    occurrences
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                `
+                ).join("");
+
+        }
+
+
+        function renderDashboardRecent(list) {
+
+            const equipment =
+                getEquipment();
+
+
+            const recent =
+                [...list]
+                    .sort(
+                        (a, b) =>
+                            new Date(b.date)
+                            -
+                            new Date(a.date)
+                    )
+                    .slice(0, 5);
+
+
+            const body =
+                document.getElementById(
+                    "dashboard-recent-body"
+                );
+
+
+            if (!recent.length) {
+
+                body.innerHTML = `
+
+                    <tr>
+                        <td colspan="6"
+                            class="px-6 py-8 text-center text-xs text-slate-600">
+                            Aucune intervention.
+                        </td>
+                    </tr>
+
+                `;
+
+                return;
+
+            }
+
+
+            body.innerHTML =
+                recent.map(
+                    i => {
+
+                        const eq =
+                            equipment.find(
+                                e => e.id === i.eqId
+                            ) || {};
+
+                        return `
+
+                        <tr class="border-t border-slate-800 hover:bg-slate-950/60">
+
+                            <td class="px-6 py-3">
+
+                                <div class="font-mono text-xs font-bold text-white">
+                                    ${escapeHtml(i.number)}
+                                </div>
+
+                                <div class="text-[10px] text-slate-600">
+                                    ${formatDate(i.date)}
+                                </div>
+
+                            </td>
+
+                            <td class="px-6 py-3 text-xs text-slate-300">
+                                ${escapeHtml(eq.code)}
+                                —
+                                ${escapeHtml(eq.name)}
+                            </td>
+
+                            <td class="px-6 py-3">
+
+                                <span class="px-2 py-1 rounded text-[10px] bg-slate-800 text-slate-300">
+                                    ${escapeHtml(i.type)}
+                                </span>
+
+                            </td>
+
+                            <td class="px-6 py-3 text-xs text-slate-400">
+                                ${escapeHtml(i.failure || "—")}
+                            </td>
+
+                            <td class="px-6 py-3 font-mono text-xs text-rose-400">
+                                ${i.downtime || 0} min
+                            </td>
+
+                            <td class="px-6 py-3">
+
+                                <span class="${statusClass(i.status)}">
+                                    ${escapeHtml(i.status)}
+                                </span>
+
+                            </td>
+
+                        </tr>
+
+                        `;
+
+                    }
+                ).join("");
+
+        }
+
+
+        /* ========================================================
+           EQUIPMENT TABLE
+        ======================================================== */
+
+        function renderEquipmentFilters() {
+
+            const equipment =
+                getEquipment();
+
+
+            const lines =
+                [...new Set(
+                    equipment
+                        .map(e => e.line)
+                        .filter(Boolean)
+                )]
+                .sort();
+
+
+            const lineSelect =
+                document.getElementById(
+                    "equipment-filter-line"
+                );
+
+
+            const currentLine =
+                filters.line;
+
+
+            lineSelect.innerHTML =
+                `<option value="">Toutes les lignes</option>`
+                +
+                lines.map(
+                    line =>
+                        `<option value="${escapeHtml(line)}">${escapeHtml(line)}</option>`
+                ).join("");
+
+
+            lineSelect.value =
+                currentLine;
+
+
+            const states =
+                [...new Set(
+                    equipment
+                        .map(e => e.state)
+                        .filter(Boolean)
+                )]
+                .sort();
+
+
+            const stateSelect =
+                document.getElementById(
+                    "equipment-filter-state"
+                );
+
+
+            stateSelect.innerHTML =
+                `<option value="">Tous les états</option>`
+                +
+                states.map(
+                    state =>
+                        `<option value="${escapeHtml(state)}">${escapeHtml(state)}</option>`
+                ).join("");
+
+
+            const criticalities = [
+                "Faible",
+                "Moyenne",
+                "Haute",
+                "Critique"
+            ];
+
+
+            const criticalitySelect =
+                document.getElementById(
+                    "equipment-filter-criticality"
+                );
+
+
+            criticalitySelect.innerHTML =
+                `<option value="">Toutes criticités</option>`
+                +
+                criticalities.map(
+                    c =>
+                        `<option value="${c}">${c}</option>`
+                ).join("");
+
+        }
+
+
+        function renderEquipmentTable() {
+
+            const equipment =
+                getEquipment();
+
+
+            const search =
+                (
+                    document.getElementById(
+                        "equipment-search"
+                    )?.value
+                    ||
+                    ""
+                )
+                .toLowerCase()
+                .trim();
+
+
+            const line =
+                document.getElementById(
+                    "equipment-filter-line"
+                )?.value
+                ||
+                "";
+
+
+            const state =
+                document.getElementById(
+                    "equipment-filter-state"
+                )?.value
+                ||
+                "";
+
+
+            const criticality =
+                document.getElementById(
+                    "equipment-filter-criticality"
+                )?.value
+                ||
+                "";
+
+
+            const filtered =
+                equipment.filter(
+                    e => {
+
+                        const text =
+                            [
+                                e.code,
+                                e.name,
+                                e.line,
+                                e.workshop,
+                                e.category,
+                                e.manufacturer,
+                                e.model
+                            ]
+                            .filter(Boolean)
+                            .join(" ")
+                            .toLowerCase();
+
+
+                        return (
+
+                            (
+                                !search ||
+                                text.includes(search)
+                            )
+
+                            &&
+
+                            (
+                                !line ||
+                                e.line === line
+                            )
+
+                            &&
+
+                            (
+                                !state ||
+                                e.state === state
+                            )
+
+                            &&
+
+                            (
+                                !criticality ||
+                                e.criticality === criticality
+                            )
+
+                        );
+
+                    }
+                );
+
+
+            const body =
+                document.getElementById(
+                    "equipment-table-body"
+                );
+
+
+            if (!filtered.length) {
+
+                body.innerHTML = `
+
+                    <tr>
+                        <td colspan="7"
+                            class="px-5 py-8 text-center text-xs text-slate-600">
+                            Aucun équipement trouvé.
+                        </td>
+                    </tr>
+
+                `;
+
+                return;
+
+            }
+
+
+            body.innerHTML =
+                filtered.map(
+                    e => `
+
+                    <tr class="border-t border-slate-800 hover:bg-slate-950/60">
+
+                        <td class="px-5 py-4">
+
+                            <div class="font-mono text-xs font-bold text-white">
+                                ${escapeHtml(e.code)}
+                            </div>
+
+                        </td>
+
+                        <td class="px-5 py-4">
+
+                            <div class="text-xs font-medium text-white">
+                                ${escapeHtml(e.name)}
+                            </div>
+
+                            <div class="text-[10px] text-slate-600">
+                                ${escapeHtml(e.manufacturer || "")}
+                                ${escapeHtml(e.model || "")}
+                            </div>
+
+                        </td>
+
+                        <td class="px-5 py-4 text-xs text-slate-400">
+
+                            ${escapeHtml(e.line)}
+
+                            <div class="text-[10px] text-slate-600">
+                                ${escapeHtml(e.workshop)}
+                            </div>
+
+                        </td>
+
+                        <td class="px-5 py-4 text-xs text-slate-400">
+                            ${escapeHtml(e.category)}
+                        </td>
+
+                        <td class="px-5 py-4">
+                            ${stateBadge(e.state)}
+                        </td>
+
+                        <td class="px-5 py-4">
+                            ${criticalityBadge(e.criticality)}
+                        </td>
+
+                        <td class="px-5 py-4 text-right">
+
+                            <button
+                                onclick="switchTab('equipment-detail', '${e.id}')"
+                                class="text-xs text-indigo-400 hover:text-indigo-300">
+
+                                Consulter →
+
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `
+                ).join("");
+
+        }
+
+
+        /* ========================================================
+           EQUIPMENT DETAIL
+        ======================================================== */
+
+        function renderEquipmentDetail() {
+
+            const container =
+                document.getElementById(
+                    "equipment-detail-content"
+                );
+
+
+            if (!currentEquipmentId) {
+
+                container.innerHTML =
+                    emptyState(
+                        "Aucun équipement sélectionné."
+                    );
+
+                return;
+
+            }
+
+
+            const equipment =
+                getEquipment();
+
+            const eq =
+                equipment.find(
+                    e =>
+                        e.id === currentEquipmentId
+                );
+
+
+            if (!eq) {
+
+                container.innerHTML =
+                    emptyState(
+                        "Équipement introuvable."
+                    );
+
+                return;
+
+            }
+
+
+            const allInterventions =
+                getInterventions()
+                    .filter(
+                        i =>
+                            i.eqId === eq.id
+                    );
+
+
+            const periodInterventions =
+                getFilteredInterventions()
+                    .filter(
+                        i =>
+                            i.eqId === eq.id
+                    );
+
+
+            const kpi =
+                calculateKPIs(
+                    periodInterventions
+                );
+
+
+            const recurrences =
+                detectRecurrences(
+                    periodInterventions
+                )
+                .filter(
+                    r =>
+                        r.eq.id === eq.id
+                );
+
+
+            const sortedHistory =
+                [...allInterventions]
+                    .sort(
+                        (a, b) =>
+                            new Date(b.date)
+                            -
+                            new Date(a.date)
+                    );
+
+
+            container.innerHTML = `
+
+                <div class="flex flex-col xl:flex-row justify-between gap-4 mb-6">
+
+                    <div>
+
+                        <div class="flex items-center gap-3 mb-2">
+
+                            <span class="font-mono text-indigo-400 font-bold">
+                                ${escapeHtml(eq.code)}
+                            </span>
+
+                            ${criticalityBadge(eq.criticality)}
+
+                        </div>
+
+                        <h2 class="text-2xl font-bold text-white">
+                            ${escapeHtml(eq.name)}
+                        </h2>
+
+                        <p class="text-sm text-slate-500 mt-1">
+                            ${escapeHtml(eq.line)}
+                            •
+                            ${escapeHtml(eq.workshop)}
+                            •
+                            ${escapeHtml(eq.category)}
+                        </p>
+
+                    </div>
+
+                    <div>
+                        ${stateBadge(eq.state)}
+                    </div>
+
+                </div>
+
+
+                <!-- Equipment summary -->
+
+                <div class="grid grid-cols-2 xl:grid-cols-5 gap-4 mb-6">
+
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+
+                        <div class="text-[10px] uppercase tracking-widest text-slate-600">
+                            Interventions
+                        </div>
+
+                        <div class="text-xl font-bold text-white mt-1">
+                            ${periodInterventions.length}
+                        </div>
+
+                        <div class="text-[10px] text-slate-600 mt-1">
+                            période sélectionnée
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+
+                        <div class="text-[10px] uppercase tracking-widest text-slate-600">
+                            Pannes
+                        </div>
+
+                        <div class="text-xl font-bold text-white mt-1">
+                            ${kpi.failures}
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+
+                        <div class="text-[10px] uppercase tracking-widest text-slate-600">
+                            Arrêt
+                        </div>
+
+                        <div class="text-xl font-bold text-white mt-1">
+                            ${formatHours(kpi.downtime)}
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+
+                        <div class="text-[10px] uppercase tracking-widest text-slate-600">
+                            MTTR
+                        </div>
+
+                        <div class="text-xl font-bold text-white mt-1">
+                            ${
+                                kpi.mttr !== null
+                                    ? Math.round(kpi.mttr) + " min"
+                                    : "—"
+                            }
+                        </div>
+
+                    </div>
+
+
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+
+                        <div class="text-[10px] uppercase tracking-widest text-slate-600">
+                            MTBF
+                        </div>
+
+                        <div class="text-xl font-bold text-white mt-1">
+                            ${
+                                kpi.mtbf !== null
+                                    ? Math.round(kpi.mtbf) + " h"
+                                    : "—"
+                            }
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <div class="grid grid-cols-1 xl:grid-cols-3 gap-6">
+
+                    <!-- Info -->
+
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+
+                        <h3 class="font-bold text-white mb-5">
+                            Informations équipement
+                        </h3>
+
+                        <div class="space-y-4 text-xs">
+
+                            ${detailRow(
+                                "Fabricant",
+                                eq.manufacturer || "—"
+                            )}
+
+                            ${detailRow(
+                                "Modèle",
+                                eq.model || "—"
+                            )}
+
+                            ${detailRow(
+                                "Mise en service",
+                                formatDate(eq.commissioning)
+                            )}
+
+                            ${detailRow(
+                                "Famille",
+                                eq.category || "—"
+                            )}
+
+                            ${detailRow(
+                                "Criticité",
+                                eq.criticality || "—"
+                            )}
+
+                            ${detailRow(
+                                "État",
+                                eq.state || "—"
+                            )}
+
+                        </div>
+
+                    </div>
+
+
+                    <!-- Recurrences -->
+
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+
+                        <h3 class="font-bold text-white mb-5">
+                            Récurrences
+                        </h3>
+
+                        ${
+                            recurrences.length
+                                ? recurrences.map(
+                                    r => `
+
+                                    <div class="p-3 rounded-lg border border-amber-900/50 bg-amber-950/10 mb-3">
+
+                                        <div class="text-xs font-semibold text-amber-300">
+                                            ${escapeHtml(r.failure)}
+                                        </div>
+
+                                        <div class="text-[11px] text-slate-400 mt-1">
+                                            ${r.count} occurrences
+                                        </div>
+
+                                        <div class="text-[10px] text-slate-600 mt-2">
+                                            ${formatDate(r.firstDate)}
+                                            →
+                                            ${formatDate(r.lastDate)}
+                                        </div>
+
+                                    </div>
+
+                                    `
+                                ).join("")
+                                :
+                                `<p class="text-xs text-slate-600">
+                                    Aucune récurrence détectée sur la période.
+                                </p>`
+                        }
+
+                    </div>
+
+
+                    <!-- Period -->
+
+                    <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6">
+
+                        <h3 class="font-bold text-white mb-5">
+                            Contexte d'analyse
+                        </h3>
+
+                        <div class="text-xs text-slate-400">
+                            Période
+                        </div>
+
+                        <div class="text-sm font-semibold text-indigo-300 mt-1">
+                            ${getPeriodLabel()}
+                        </div>
+
+                        <div class="mt-5 pt-5 border-t border-slate-800">
+
+                            <div class="text-xs text-slate-400">
+                                Historique total
+                            </div>
+
+                            <div class="text-xl font-bold text-white mt-1">
+                                ${allInterventions.length}
+                            </div>
+
+                            <div class="text-[10px] text-slate-600">
+                                interventions enregistrées
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+                <!-- Timeline -->
+
+                <div class="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 mt-6">
+
+                    <div class="flex justify-between items-center mb-6">
+
+                        <div>
+
+                            <h3 class="font-bold text-white">
+                                Historique des interventions
+                            </h3>
+
+                            <p class="text-xs text-slate-500 mt-1">
+                                Historique complet de l'équipement
+                            </p>
+
+                        </div>
+
+                        <span class="text-xs text-slate-600">
+                            ${allInterventions.length} intervention(s)
+                        </span>
+
+                    </div>
+
+                    ${
+                        sortedHistory.length
+                            ? `
+
+                            <div class="space-y-4">
+
+                                ${
+                                    sortedHistory.map(
+                                        i => `
+
+                                        <div class="relative pl-6 border-l border-slate-800">
+
+                                            <div class="absolute -left-[5px] top-1 w-2 h-2 rounded-full ${
+                                                i.type === "Correctif"
+                                                    ? "bg-amber-500"
+                                                    : "bg-blue-500"
+                                            } ring-4 ring-slate-950"></div>
+
+                                            <div class="flex flex-col md:flex-row md:justify-between gap-2">
+
+                                                <div>
+
+                                                    <div class="text-xs text-slate-500">
+                                                        ${formatDate(i.date)}
+                                                        •
+                                                        ${escapeHtml(i.type)}
+                                                    </div>
+
+                                                    <div class="text-sm font-semibold text-white mt-1">
+                                                        ${escapeHtml(i.symptom || "Intervention")}
+                                                    </div>
+
+                                                    <div class="text-xs text-slate-500 mt-1">
+                                                        ${escapeHtml(i.failure || "Aucune défaillance renseignée")}
+                                                    </div>
+
+                                                    <div class="text-xs text-slate-400 mt-2">
+                                                        → ${escapeHtml(i.action || "Aucune action renseignée")}
+                                                    </div>
+
+                                                </div>
+
+                                                <div class="text-right text-xs">
+
+                                                    <div class="font-mono text-slate-300">
+                                                        ${i.duration || 0} min
+                                                    </div>
+
+                                                    <div class="text-rose-400">
+                                                        arrêt ${i.downtime || 0} min
+                                                    </div>
+
+                                                </div>
+
+                                            </div>
+
+                                        </div>
+
+                                        `
+                                    ).join("")
+                                }
+
+                            </div>
+
+                            `
+                            :
+                            emptyState(
+                                "Aucune intervention enregistrée."
+                            )
+                    }
+
+                </div>
+
+            `;
+
+        }
+
+
+        /* ========================================================
+           INTERVENTION FILTERS
+        ======================================================== */
+
+        function renderInterventionFilters() {
+
+            const interventions =
+                getInterventions();
+
+            const equipment =
+                getEquipment();
+
+
+            const types =
+                [...new Set(
+                    interventions
+                        .map(i => i.type)
+                        .filter(Boolean)
+                )]
+                .sort();
+
+
+            const origins =
+                [...new Set(
+                    interventions
+                        .map(i => i.origin)
+                        .filter(Boolean)
+                )]
+                .sort();
+
+
+            const statuses =
+                [...new Set(
+                    interventions
+                        .map(i => i.status)
+                        .filter(Boolean)
+                )]
+                .sort();
+
+
+            const typeSelect =
+                document.getElementById(
+                    "int-filter-type"
+                );
+
+
+            typeSelect.innerHTML =
+                `<option value="">Tous les types</option>`
+                +
+                types.map(
+                    x =>
+                        `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`
+                ).join("");
+
+
+            typeSelect.value =
+                filters.type;
+
+
+            const originSelect =
+                document.getElementById(
+                    "int-filter-origin"
+                );
+
+
+            originSelect.innerHTML =
+                `<option value="">Toutes les origines</option>`
+                +
+                origins.map(
+                    x =>
+                        `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`
+                ).join("");
+
+
+            originSelect.value =
+                filters.origin;
+
+
+            const statusSelect =
+                document.getElementById(
+                    "int-filter-status"
+                );
+
+
+            statusSelect.innerHTML =
+                `<option value="">Tous les statuts</option>`
+                +
+                statuses.map(
+                    x =>
+                        `<option value="${escapeHtml(x)}">${escapeHtml(x)}</option>`
+                ).join("");
+
+
+            statusSelect.value =
+                filters.status;
+
+
+            const equipmentSelect =
+                document.getElementById(
+                    "int-filter-equipment"
+                );
+
+
+            equipmentSelect.innerHTML =
+                `<option value="">Tous les équipements</option>`
+                +
+                equipment
+                    .sort(
+                        (a, b) =>
+                            a.code.localeCompare(
+                                b.code
+                            )
+                    )
+                    .map(
+                        e =>
+                            `<option value="${e.id}">
+                                ${escapeHtml(e.code)} — ${escapeHtml(e.name)}
+                            </option>`
+                    )
+                    .join("");
+
+
+            equipmentSelect.value =
+                filters.equipmentId;
+
+
+            const search =
+                document.getElementById(
+                    "int-search"
+                );
+
+
+            if (search) {
+                search.value =
+                    filters.search;
+            }
+
+        }
+
+
+        function renderInterventionsTable() {
+
+            filters.search =
+                (
+                    document.getElementById(
+                        "int-search"
+                    )?.value
+                    ||
+                    ""
+                ).trim();
+
+
+            filters.type =
+                document.getElementById(
+                    "int-filter-type"
+                )?.value
+                ||
+                "";
+
+
+            filters.origin =
+                document.getElementById(
+                    "int-filter-origin"
+                )?.value
+                ||
+                "";
+
+
+            filters.status =
+                document.getElementById(
+                    "int-filter-status"
+                )?.value
+                ||
+                "";
+
+
+            filters.equipmentId =
+                document.getElementById(
+                    "int-filter-equipment"
+                )?.value
+                ||
+                "";
+
+
+            const list =
+                getFilteredInterventions();
+
+            const equipment =
+                getEquipment();
+
+
+            const body =
+                document.getElementById(
+                    "interventions-table-body"
+                );
+
+
+            if (!list.length) {
+
+                body.innerHTML = `
+
+                    <tr>
+
+                        <td colspan="7"
+                            class="px-5 py-10 text-center">
+
+                            <div class="text-sm text-slate-500">
+                                Aucune intervention trouvée.
+                            </div>
+
+                            <div class="text-xs text-slate-700 mt-1">
+                                Modifiez les filtres ou la période d'analyse.
+                            </div>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+                renderFilterContext();
+
+                return;
+
+            }
+
+
+            const sorted =
+                [...list]
+                    .sort(
+                        (a, b) =>
+                            new Date(b.date)
+                            -
+                            new Date(a.date)
+                    );
+
+
+            body.innerHTML =
+                sorted.map(
+                    i => {
+
+                        const eq =
+                            equipment.find(
+                                e =>
+                                    e.id === i.eqId
+                            ) || {};
+
+
+                        return `
+
+                        <tr class="border-t border-slate-800 hover:bg-slate-950/60">
+
+                            <td class="px-5 py-4">
+
+                                <div class="font-mono text-xs font-bold text-white">
+                                    ${escapeHtml(i.number)}
+                                </div>
+
+                                <div class="text-[10px] text-slate-600">
+                                    ${formatDate(i.date)}
+                                </div>
+
+                            </td>
+
+
+                            <td
+                                class="px-5 py-4 text-xs text-slate-300 cursor-pointer hover:text-white"
+                                onclick="switchTab('equipment-detail', '${eq.id}')">
+
+                                <div class="font-medium">
+                                    ${escapeHtml(eq.code)}
+                                </div>
+
+                                <div class="text-[10px] text-slate-600">
+                                    ${escapeHtml(eq.name)}
+                                </div>
+
+                            </td>
+
+
+                            <td class="px-5 py-4">
+
+                                <span class="px-2 py-1 rounded text-[10px] bg-slate-800 text-slate-300">
+                                    ${escapeHtml(i.type)}
+                                </span>
+
+                                <span class="px-2 py-1 rounded text-[10px] ${
+                                    i.origin === "Externe"
+                                        ? "bg-indigo-500/10 text-indigo-300"
+                                        : "bg-slate-800 text-slate-500"
+                                }">
+
+                                    ${escapeHtml(i.origin)}
+
+                                </span>
+
+                            </td>
+
+
+                            <td class="px-5 py-4">
+
+                                <div class="text-xs text-slate-300">
+                                    ${escapeHtml(i.symptom || "—")}
+                                </div>
+
+                                <div class="text-[10px] text-slate-600 mt-1">
+                                    ${escapeHtml(i.failure || "Aucune défaillance")}
+                                </div>
+
+                            </td>
+
+
+                            <td class="px-5 py-4 font-mono text-[11px]">
+
+                                <div class="text-slate-400">
+                                    Intervention :
+                                    ${i.duration || 0} min
+                                </div>
+
+                                <div class="text-rose-400">
+                                    Arrêt :
+                                    ${i.downtime || 0} min
+                                </div>
+
+                            </td>
+
+
+                            <td class="px-5 py-4">
+
+                                ${statusBadge(i.status)}
+
+                            </td>
+
+
+                            <td class="px-5 py-4 text-right">
+
+                                <div class="flex justify-end gap-2">
+
+                                    <button
+                                        onclick="openEditInterventionModal('${i.id}')"
+                                        class="px-2 py-1 text-[10px] text-indigo-400 hover:text-indigo-300">
+
+                                        Modifier
+
+                                    </button>
+
+                                    <button
+                                        onclick="deleteIntervention('${i.id}')"
+                                        class="px-2 py-1 text-[10px] text-rose-400 hover:text-rose-300">
+
+                                        Supprimer
+
+                                    </button>
+
+                                </div>
+
+                            </td>
+
+                        </tr>
+
+                        `;
+
+                    }
+                ).join("");
+
+
+            renderFilterContext();
+
+        }
+
+
+        /* ========================================================
+           HISTORY
+        ======================================================== */
+
+        function renderHistoryAnalysis() {
+
+            const list =
+                getFilteredInterventions();
+
+
+            const kpi =
+                calculateKPIs(list);
+
+
+            const pareto =
+                calculatePareto(list);
+
+
+            const recurrences =
+                detectRecurrences(list);
+
+
+            const equipmentStats =
+                calculateEquipmentStats(list);
+
+
+            document.getElementById(
+                "analysis-summary"
+            ).innerHTML = `
+
+                ${analysisCard(
+                    "Interventions",
+                    kpi.interventions
+                )}
+
+                ${analysisCard(
+                    "Pannes",
+                    kpi.failures
+                )}
+
+                ${analysisCard(
+                    "Temps d'arrêt",
+                    formatHours(kpi.downtime)
+                )}
+
+                ${analysisCard(
+                    "MTTR",
+                    kpi.mttr !== null
+                        ? Math.round(kpi.mttr) + " min"
+                        : "—"
+                )}
+
+            `;
+
+
+            const paretoContainer =
+                document.getElementById(
+                    "history-pareto-container"
+                );
+
+
+            if (!pareto.length) {
+
+                paretoContainer.innerHTML =
+                    emptyState(
+                        "Pas assez de données pour construire un Pareto."
+                    );
+
+            } else {
+
+                paretoContainer.innerHTML =
+                    pareto.map(
+                        p => `
+
+                        <div class="p-4 rounded-xl border border-slate-800 bg-slate-950/50">
+
+                            <div class="flex justify-between items-center mb-2">
+
+                                <div class="text-xs font-semibold text-white">
+                                    ${escapeHtml(p.name)}
+                                </div>
+
+                                <div class="text-xs font-mono text-indigo-400">
+                                    ${p.count} occurrence(s)
+                                    •
+                                    ${Math.round(p.percentage)} %
+                                </div>
+
+                            </div>
+
+                            <div class="h-2 rounded-full bg-slate-900 overflow-hidden">
+
+                                <div
+                                    class="h-full bg-indigo-500 rounded-full"
+                                    style="width:${Math.min(100, p.percentage)}%">
+                                </div>
+
+                            </div>
+
+                            <div class="text-[10px] text-slate-600 mt-2">
+                                Cumul Pareto :
+                                ${Math.round(p.cumulative)} %
+                            </div>
+
+                        </div>
+
+                        `
+                    ).join("");
+
+            }
+
+
+            const recurrenceContainer =
+                document.getElementById(
+                    "history-recurrences-container"
+                );
+
+
+            if (!recurrences.length) {
+
+                recurrenceContainer.innerHTML =
+                    emptyState(
+                        "Aucune récurrence détectée sur la période."
+                    );
+
+            } else {
+
+                recurrenceContainer.innerHTML =
+                    recurrences.map(
+                        r => `
+
+                        <div
+                            onclick="switchTab('equipment-detail', '${r.eq.id}')"
+                            class="p-4 rounded-xl border border-amber-900/50 bg-amber-950/10 hover:bg-amber-950/20 cursor-pointer">
+
+                            <div class="flex justify-between gap-4">
+
+                                <div>
+
+                                    <div class="text-xs font-bold text-amber-300">
+                                        ${escapeHtml(r.eq.code)}
+                                        —
+                                        ${escapeHtml(r.eq.name)}
+                                    </div>
+
+                                    <div class="text-xs text-slate-300 mt-1">
+                                        ${escapeHtml(r.failure)}
+                                    </div>
+
+                                    <div class="text-[10px] text-slate-600 mt-2">
+
+                                        ${formatDate(r.firstDate)}
+                                        →
+                                        ${formatDate(r.lastDate)}
+
+                                    </div>
+
+                                </div>
+
+                                <div class="text-right">
+
+                                    <div class="text-lg font-bold text-amber-300">
+                                        ${r.count}
+                                    </div>
+
+                                    <div class="text-[9px] uppercase tracking-wider text-slate-600">
+                                        occurrences
+                                    </div>
+
+                                    <div class="text-[10px] text-rose-400 mt-2">
+                                        arrêt ${formatHours(r.downtime)}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        `
+                    ).join("");
+
+            }
+
+
+            const ranking =
+                document.getElementById(
+                    "history-equipment-ranking"
+                );
+
+
+            if (!equipmentStats.length) {
+
+                ranking.innerHTML =
+                    emptyState(
+                        "Aucun équipement sollicité sur cette période."
+                    );
+
+            } else {
+
+                ranking.innerHTML =
+                    equipmentStats.map(
+                        s => `
+
+                        <div class="p-4 rounded-xl border border-slate-800 bg-slate-950/50">
+
+                            <div class="flex items-center justify-between">
+
+                                <div>
+
+                                    <div class="text-xs font-bold text-white">
+                                        ${escapeHtml(s.eq.code)}
+                                        —
+                                        ${escapeHtml(s.eq.name)}
+                                    </div>
+
+                                    <div class="text-[10px] text-slate-600 mt-1">
+                                        ${escapeHtml(s.eq.line)}
+                                    </div>
+
+                                </div>
+
+                                <div class="text-right">
+
+                                    <div class="text-sm font-bold text-indigo-300">
+                                        ${s.interventions}
+                                    </div>
+
+                                    <div class="text-[9px] uppercase text-slate-600">
+                                        interventions
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                            <div class="grid grid-cols-3 gap-3 mt-4 text-[10px]">
+
+                                <div>
+
+                                    <div class="text-slate-600">
+                                        Pannes
+                                    </div>
+
+                                    <div class="text-slate-300 font-semibold">
+                                        ${s.failures}
+                                    </div>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="text-slate-600">
+                                        Arrêt
+                                    </div>
+
+                                    <div class="text-slate-300 font-semibold">
+                                        ${formatHours(s.downtime)}
+                                    </div>
+
+                                </div>
+
+                                <div>
+
+                                    <div class="text-slate-600">
+                                        Surveillance
+                                    </div>
+
+                                    <div class="text-slate-300 font-semibold">
+                                        ${s.surveillance}
+                                    </div>
+
+                                </div>
+
+                            </div>
+
+                        </div>
+
+                        `
+                    ).join("");
+
+            }
+
+        }
+
+
+        /* ========================================================
+           INTERVENTION MODAL
+        ======================================================== */
+
+        function populateEquipmentSelect() {
+
+            const equipment =
+                getEquipment();
+
+
+            const select =
+                document.getElementById(
+                    "form-int-equipment"
+                );
+
+
+            select.innerHTML =
+                `<option value="">Sélectionner...</option>`
+                +
+                equipment
+                    .sort(
+                        (a, b) =>
+                            a.code.localeCompare(
+                                b.code
+                            )
+                    )
+                    .map(
+                        e =>
+                            `<option value="${e.id}">
+                                ${escapeHtml(e.code)} — ${escapeHtml(e.name)}
+                            </option>`
+                    )
+                    .join("");
+
+        }
+
+
+        function openNewInterventionModal() {
+
+            document.getElementById(
+                "intervention-form"
+            ).reset();
+
+
+            document.getElementById(
+                "intervention-edit-id"
+            ).value = "";
+
+
+            document.getElementById(
+                "intervention-modal-title"
+            ).textContent =
+                "Nouvelle intervention";
+
+
+            populateEquipmentSelect();
+
+
+            document.getElementById(
+                "form-int-date"
+            ).value =
+                todayISO();
+
+
+            openModal(
+                "intervention-modal"
+            );
+
+        }
+
+
+        function openEditInterventionModal(id) {
+
+            const list =
+                getInterventions();
+
+            const intervention =
+                list.find(
+                    i =>
+                        i.id === id
+                );
+
+
+            if (!intervention) {
+                return;
+            }
+
+
+            populateEquipmentSelect();
+
+
+            document.getElementById(
+                "intervention-edit-id"
+            ).value =
+                intervention.id;
+
+
+            document.getElementById(
+                "intervention-modal-title"
+            ).textContent =
+                `Modifier ${intervention.number}`;
+
+
+            setValue(
+                "form-int-equipment",
+                intervention.eqId
+            );
+
+            setValue(
+                "form-int-type",
+                intervention.type
+            );
+
+            setValue(
+                "form-int-origin",
+                intervention.origin
+            );
+
+            setValue(
+                "form-int-status",
+                intervention.status
+            );
+
+            setValue(
+                "form-int-date",
+                intervention.date
+            );
+
+            setValue(
+                "form-int-technician",
+                intervention.technician
+            );
+
+            setValue(
+                "form-int-start",
+                intervention.startedAt
+            );
+
+            setValue(
+                "form-int-end",
+                intervention.endedAt
+            );
+
+            setValue(
+                "form-int-symptom",
+                intervention.symptom
+            );
+
+            setValue(
+                "form-int-failure",
+                intervention.failure
+            );
+
+            setValue(
+                "form-int-cause",
+                intervention.cause
+            );
+
+            setValue(
+                "form-int-action",
+                intervention.action
+            );
+
+            setValue(
+                "form-int-duration",
+                intervention.duration
+            );
+
+            setValue(
+                "form-int-downtime",
+                intervention.downtime
+            );
+
+            setValue(
+                "form-int-cost",
+                intervention.cost
+            );
+
+            setValue(
+                "form-int-parts",
+                intervention.parts
+            );
+
+            setValue(
+                "form-int-comment",
+                intervention.comment
+            );
+
+
+            openModal(
+                "intervention-modal"
+            );
+
+        }
+
+
+        function saveIntervention(event) {
+
+            event.preventDefault();
+
+
+            const list =
+                getInterventions();
+
+
+            const editId =
+                document.getElementById(
+                    "intervention-edit-id"
+                ).value;
+
+
+            const now =
+                new Date().toISOString();
+
+
+            const eqId =
+                getValue(
+                    "form-int-equipment"
+                );
+
+
+            if (!eqId) {
+
+                alert(
+                    "Veuillez sélectionner un équipement."
+                );
+
+                return;
+
+            }
+
+
+            const duration =
+                Number(
+                    getValue(
+                        "form-int-duration"
+                    )
+                )
+                ||
+                calculateDurationFromDates();
+
+
+            const interventionData = {
+
+                eqId,
+
+                date:
+                    getValue(
+                        "form-int-date"
+                    ),
+
+                startedAt:
+                    getValue(
+                        "form-int-start"
+                    ),
+
+                endedAt:
+                    getValue(
+                        "form-int-end"
+                    ),
+
+                type:
+                    getValue(
+                        "form-int-type"
+                    ),
+
+                origin:
+                    getValue(
+                        "form-int-origin"
+                    ),
+
+                status:
+                    getValue(
+                        "form-int-status"
+                    ),
+
+                technician:
+                    getValue(
+                        "form-int-technician"
+                    ),
+
+                symptom:
+                    getValue(
+                        "form-int-symptom"
+                    ),
+
+                failure:
+                    getValue(
+                        "form-int-failure"
+                    ),
+
+                cause:
+                    getValue(
+                        "form-int-cause"
+                    ),
+
+                action:
+                    getValue(
+                        "form-int-action"
+                    ),
+
+                duration,
+
+                downtime:
+                    Number(
+                        getValue(
+                            "form-int-downtime"
+                        )
+                    ) || 0,
+
+                cost:
+                    Number(
+                        getValue(
+                            "form-int-cost"
+                        )
+                    ) || 0,
+
+                parts:
+                    getValue(
+                        "form-int-parts"
+                    ),
+
+                comment:
+                    getValue(
+                        "form-int-comment"
+                    )
+
+            };
+
+
+            if (editId) {
+
+                const index =
+                    list.findIndex(
+                        i =>
+                            i.id === editId
+                    );
+
+
+                if (index !== -1) {
+
+                    list[index] = {
+
+                        ...list[index],
+
+                        ...interventionData,
+
+                        updatedAt: now
+
+                    };
+
+                }
+
+            } else {
+
+                const nextNumber =
+                    list.length + 1;
+
+
+                const intervention = {
+
+                    id:
+                        "int-" +
+                        Date.now(),
+
+                    number:
+                        `INT-${new Date().getFullYear()}-${String(nextNumber).padStart(3, "0")}`,
+
+                    ...interventionData,
+
+                    createdAt: now,
+
+                    updatedAt: now
+
+                };
+
+
+                list.push(
+                    intervention
+                );
+
+            }
+
+
+            saveInterventionData(
+                list
+            );
+
+
+            closeModal(
+                "intervention-modal"
+            );
+
+
+            renderEverything();
+
+        }
+
+
+        function calculateDurationFromDates() {
+
+            const start =
+                getValue(
+                    "form-int-start"
+                );
+
+            const end =
+                getValue(
+                    "form-int-end"
+                );
+
+
+            if (!start || !end) {
+                return 0;
+            }
+
+
+            const diff =
+                (
+                    new Date(end)
+                    -
+                    new Date(start)
+                )
+                /
+                60000;
+
+
+            return diff > 0
+                ? Math.round(diff)
+                : 0;
+
+        }
+
+
+        function deleteIntervention(id) {
+
+            const list =
+                getInterventions();
+
+            const intervention =
+                list.find(
+                    i =>
+                        i.id === id
+                );
+
+
+            if (!intervention) {
+                return;
+            }
+
+
+            if (
+                !confirm(
+                    `Supprimer ${intervention.number} ?`
+                )
+            ) {
+                return;
+            }
+
+
+            saveInterventionData(
+                list.filter(
+                    i =>
+                        i.id !== id
+                )
+            );
+
+
+            renderEverything();
+
+        }
+
+
+        /* ========================================================
+           EQUIPMENT MODAL
+        ======================================================== */
+
+        function openNewEquipmentModal() {
+
+            document
+                .querySelector(
+                    "#equipment-modal form"
+                )
+                .reset();
+
+
+            openModal(
+                "equipment-modal"
+            );
+
+        }
+
+
+        function saveEquipment(event) {
+
+            event.preventDefault();
+
+
+            const list =
+                getEquipment();
+
+
+            const equipment = {
+
+                id:
+                    "eq-" +
+                    Date.now(),
+
+                code:
+                    getValue(
+                        "form-eq-code"
+                    ),
+
+                name:
+                    getValue(
+                        "form-eq-name"
+                    ),
+
+                line:
+                    getValue(
+                        "form-eq-line"
+                    ),
+
+                workshop:
+                    "",
+
+                category:
+                    getValue(
+                        "form-eq-category"
+                    ),
+
+                state:
+                    getValue(
+                        "form-eq-state"
+                    ),
+
+                criticality:
+                    getValue(
+                        "form-eq-criticality"
+                    ),
+
+                manufacturer:
+                    getValue(
+                        "form-eq-manufacturer"
+                    ),
+
+                model:
+                    getValue(
+                        "form-eq-model"
+                    ),
+
+                commissioning:
+                    todayISO()
+
+            };
+
+
+            list.push(
+                equipment
+            );
+
+
+            saveEquipmentData(
+                list
+            );
+
+
+            closeModal(
+                "equipment-modal"
+            );
+
+
+            renderEverything();
+
+        }
+
+
+        /* ========================================================
+           UI HELPERS
+        ======================================================== */
+
+        function getValue(id) {
+
+            return (
+                document.getElementById(id)?.value
+                ||
+                ""
+            );
+
+        }
+
+
+        function setValue(id, value) {
+
+            const el =
+                document.getElementById(id);
+
+            if (el) {
+                el.value =
+                    value ?? "";
+            }
+
+        }
+
+
+        function detailRow(label, value) {
+
+            return `
+
+                <div class="flex justify-between gap-4 pb-3 border-b border-slate-800">
+
+                    <span class="text-slate-600">
+                        ${escapeHtml(label)}
+                    </span>
+
+                    <span class="text-slate-300 text-right">
+                        ${escapeHtml(value)}
+                    </span>
+
+                </div>
+
+            `;
+
+        }
+
+
+        function analysisCard(label, value) {
+
+            return `
+
+                <div class="bg-slate-900/60 border border-slate-800 rounded-xl p-4">
+
+                    <div class="text-[10px] uppercase tracking-widest text-slate-600">
+                        ${escapeHtml(label)}
+                    </div>
+
+                    <div class="text-xl font-bold text-white mt-1">
+                        ${escapeHtml(value)}
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        function emptyState(message) {
+
+            return `
+
+                <div class="text-xs text-slate-600 p-4 rounded-lg bg-slate-950/40 border border-slate-800">
+
+                    ${escapeHtml(message)}
+
+                </div>
+
+            `;
+
+        }
+
+
+        function statusClass(status) {
+
+            if (status === "Terminée") {
+
+                return "px-2 py-1 rounded text-[10px] font-medium bg-emerald-500/10 text-emerald-400";
+
+            }
+
+            if (status === "En cours") {
+
+                return "px-2 py-1 rounded text-[10px] font-medium bg-amber-500/10 text-amber-400";
+
+            }
+
+            return "px-2 py-1 rounded text-[10px] font-medium bg-blue-500/10 text-blue-400";
+
+        }
+
+
+        function statusBadge(status) {
+
+            return `
+
+                <span class="${statusClass(status)}">
+                    ${escapeHtml(status)}
+                </span>
+
+            `;
+
+        }
+
+
+        function stateBadge(state) {
+
+            let cls =
+                "bg-slate-800 text-slate-400";
+
+
+            if (state === "Opérationnel") {
+
+                cls =
+                    "bg-emerald-500/10 text-emerald-400";
+
+            }
+
+            if (state === "Dégradé") {
+
+                cls =
+                    "bg-amber-500/10 text-amber-400";
+
+            }
+
+            if (state === "Arrêt") {
+
+                cls =
+                    "bg-rose-500/10 text-rose-400";
+
+            }
+
+
+            return `
+
+                <span class="px-2 py-1 rounded text-[10px] ${cls}">
+                    ${escapeHtml(state)}
+                </span>
+
+            `;
+
+        }
+
+
+        function criticalityBadge(criticality) {
+
+            let cls =
+                "bg-slate-800 text-slate-400";
+
+
+            if (criticality === "Critique") {
+
+                cls =
+                    "bg-rose-500/10 text-rose-400";
+
+            }
+
+            if (criticality === "Haute") {
+
+                cls =
+                    "bg-amber-500/10 text-amber-400";
+
+            }
+
+            if (criticality === "Moyenne") {
+
+                cls =
+                    "bg-indigo-500/10 text-indigo-400";
+
+            }
+
+            if (criticality === "Faible") {
+
+                cls =
+                    "bg-emerald-500/10 text-emerald-400";
+
+            }
+
+
+            return `
+
+                <span class="px-2 py-1 rounded text-[10px] ${cls}">
+                    ${escapeHtml(criticality)}
+                </span>
+
+            `;
+
+        }
+
+
+        /* ========================================================
+           RENDER EVERYTHING
+        ======================================================== */
+
+        function renderEverything() {
+
+            renderFilterContext();
+
+            renderDashboard();
+
+            renderEquipmentFilters();
+
+            renderEquipmentTable();
+
+            renderInterventionFilters();
+
+            renderInterventionsTable();
+
+            renderHistoryAnalysis();
+
+            renderEquipmentDetail();
+
+            lucide.createIcons();
+
+        }
+
+
+        /* ========================================================
+           INIT
+        ======================================================== */
+
+        function initVITA() {
+
+            /*
+                Préparation du système VITA.
+            */
+
+            getEquipment();
+            getInterventions();
+
+            document.getElementById(
+                "filter-date-from"
+            ).value =
+                filters.dateFrom;
+
+            document.getElementById(
+                "filter-date-to"
+            ).value =
+                filters.dateTo;
+
+
+            renderEverything();
+
+            switchTab(
+                "dashboard"
+            );
+
+            lucide.createIcons();
+
+        }
+
+
+        window.addEventListener(
+            "load",
+            initVITA
+        );
+
+
+        /* ========================================================
+           GLOBAL MODAL CLOSE
+        ======================================================== */
+
+        document.addEventListener(
+            "keydown",
+            event => {
+
+                if (
+                    event.key === "Escape"
+                ) {
+
+                    [
+                        "intervention-modal",
+                        "equipment-modal"
+                    ]
+                    .forEach(
+                        id => {
+
+                            const modal =
+                                document.getElementById(
+                                    id
+                                );
+
+                            if (
+                                modal &&
+                                !modal.classList.contains(
+                                    "hidden"
+                                )
+                            ) {
+
+                                modal.classList.add(
+                                    "hidden"
+                                );
+
+                            }
+
+                        }
+                    );
+
+                }
+
+            }
+        );
+
+    </script>
+
+</body>
+</html>

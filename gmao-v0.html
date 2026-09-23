@@ -1,0 +1,1148 @@
+<!DOCTYPE html>
+<html lang="fr" class="h-full bg-slate-900">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GMAO V0 – Prototype Maintenance & Méthodes</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        slate: {
+                            850: '#151f32',
+                            950: '#090d16',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+</head>
+<body class="h-full font-sans text-slate-100 bg-slate-900 flex overflow-hidden">
+
+    <!-- SIDEBAR NAVIGATION -->
+    <aside class="w-64 bg-slate-950 border-r border-slate-800 flex flex-col z-20">
+        <div class="p-5 border-b border-slate-800/80 flex items-center gap-3">
+            <div class="bg-blue-600 p-2 rounded-lg text-white">
+                <i data-lucide="wrench" class="w-6 h-6"></i>
+            </div>
+            <div>
+                <h1 class="font-bold text-base tracking-tight text-white">GMAO Maintenance</h1>
+                <span class="text-xs text-blue-400 font-medium">Prototype V0.1</span>
+            </div>
+        </div>
+
+        <nav class="flex-1 p-4 space-y-1.5 overflow-y-auto">
+            <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors bg-blue-600 text-white shadow-sm">
+                <i data-lucide="layout-dashboard" class="w-4 h-4"></i> Dashboard
+            </button>
+            <button onclick="switchTab('equipment')" id="nav-equipment" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                <i data-lucide="cpu" class="w-4 h-4"></i> Parc Équipements
+            </button>
+            <button onclick="switchTab('interventions')" id="nav-interventions" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                <i data-lucide="clipboard-list" class="w-4 h-4"></i> Interventions
+            </button>
+            <button onclick="switchTab('history')" id="nav-history" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors text-slate-400 hover:text-slate-200 hover:bg-slate-900">
+                <i data-lucide="history" class="w-4 h-4"></i> Historique & Analyse
+            </button>
+        </nav>
+
+        <div class="p-4 border-t border-slate-800/80">
+            <div class="bg-slate-900 rounded-lg p-3 border border-slate-800/60">
+                <div class="flex items-center justify-between mb-1">
+                    <span class="text-xs text-slate-400">Assistant Maintenance</span>
+                    <span class="bg-blue-500/10 text-blue-400 text-[10px] px-1.5 py-0.5 rounded font-mono">V1+</span>
+                </div>
+                <p class="text-[11px] text-slate-400">IA & base de connaissances prévues dans les versions futures.</p>
+            </div>
+        </div>
+    </aside>
+
+    <!-- MAIN CONTENT CONTAINER -->
+    <main class="flex-1 flex flex-col min-w-0 overflow-hidden bg-slate-900">
+        
+        <!-- TOP HEADER -->
+        <header class="h-16 bg-slate-950/60 backdrop-blur border-b border-slate-800 flex items-center justify-between px-6 z-10">
+            <div class="flex items-center gap-4">
+                <h2 id="page-title" class="text-lg font-semibold text-white">Dashboard Maintenance</h2>
+            </div>
+            <div class="flex items-center gap-3">
+                <button onclick="openNewInterventionModal()" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-3.5 py-2 rounded-lg text-sm font-medium shadow transition-colors">
+                    <i data-lucide="plus" class="w-4 h-4"></i> Nouvelle intervention
+                </button>
+                <button onclick="openNewEquipmentModal()" class="flex items-center gap-2 bg-slate-800 hover:bg-slate-700 text-slate-200 px-3.5 py-2 rounded-lg text-sm font-medium border border-slate-700 transition-colors">
+                    <i data-lucide="plus-circle" class="w-4 h-4"></i> Ajouter un équipement
+                </button>
+                <button onclick="resetDemoData()" title="Réinitialiser les données de démo" class="p-2 bg-slate-800 hover:bg-rose-950/50 hover:border-rose-800 hover:text-rose-400 text-slate-400 rounded-lg border border-slate-700 transition-colors">
+                    <i data-lucide="rotate-ccw" class="w-4 h-4"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- VIEWPORT CONTENT -->
+        <div class="flex-1 overflow-y-auto p-6" id="main-scroll-container">
+
+            <!-- ================= MODULE 1 : DASHBOARD ================= -->
+            <div id="view-dashboard" class="space-y-6">
+                <!-- KPI Cards -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-4">
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 shadow-sm">
+                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Équipements</span>
+                        <div class="mt-2 flex items-baseline justify-between">
+                            <span id="kpi-eq-count" class="text-2xl font-bold text-white">0</span>
+                            <span class="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded">Parc actif</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 shadow-sm">
+                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Interventions</span>
+                        <div class="mt-2 flex items-baseline justify-between">
+                            <span id="kpi-int-count" class="text-2xl font-bold text-white">0</span>
+                            <span class="text-xs text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded">Ce mois</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 shadow-sm">
+                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Pannes</span>
+                        <div class="mt-2 flex items-baseline justify-between">
+                            <span id="kpi-fail-count" class="text-2xl font-bold text-white">0</span>
+                            <span class="text-xs text-amber-400 bg-amber-500/10 px-2 py-0.5 rounded">Correctives</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 shadow-sm">
+                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">Temps d'arrêt</span>
+                        <div class="mt-2 flex items-baseline justify-between">
+                            <span id="kpi-downtime" class="text-2xl font-bold text-white">0 h</span>
+                            <span class="text-xs text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded">Cumul</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 shadow-sm">
+                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">MTTR</span>
+                        <div class="mt-2 flex items-baseline justify-between">
+                            <span id="kpi-mttr" class="text-2xl font-bold text-white">0 min</span>
+                            <span class="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Moy. rép.</span>
+                        </div>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4 shadow-sm">
+                        <span class="text-xs font-medium text-slate-400 uppercase tracking-wider">MTBF</span>
+                        <div class="mt-2 flex items-baseline justify-between">
+                            <span id="kpi-mtbf" class="text-2xl font-bold text-white">0 h</span>
+                            <span class="text-xs text-slate-400 bg-slate-800 px-2 py-0.5 rounded">Fiabilité</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Middle row : Critical watchlist & Analytics overview -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Équipements à surveiller (Score de surveillance) -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 shadow-sm flex flex-col">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                                <i data-lucide="alert-triangle" class="w-4 h-4 text-amber-500"></i> Équipements à surveiller
+                            </h3>
+                            <span class="text-xs text-slate-400">Score & Priorité</span>
+                        </div>
+                        <div id="dashboard-watchlist" class="space-y-3 flex-1">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Top équipements sollicités -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 shadow-sm flex flex-col">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                                <i data-lucide="bar-chart-3" class="w-4 h-4 text-blue-500"></i> Équipements les plus sollicités
+                            </h3>
+                            <span class="text-xs text-slate-400">Interventions</span>
+                        </div>
+                        <div id="dashboard-top-equipment" class="space-y-3 flex-1">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+
+                    <!-- Répartition des types d'interventions & Pareto -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 shadow-sm flex flex-col">
+                        <div class="flex items-center justify-between mb-4">
+                            <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                                <i data-lucide="pie-chart" class="w-4 h-4 text-emerald-500"></i> Répartition & Pareto
+                            </h3>
+                            <span class="text-xs text-slate-400">Types & Défaillances</span>
+                        </div>
+                        <div id="dashboard-pareto" class="space-y-3 flex-1 text-sm">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Last Interventions Table -->
+                <div class="bg-slate-950 border border-slate-800 rounded-xl shadow-sm overflow-hidden">
+                    <div class="p-5 border-b border-slate-800 flex items-center justify-between">
+                        <h3 class="text-sm font-semibold text-white flex items-center gap-2">
+                            <i data-lucide="clock" class="w-4 h-4 text-blue-400"></i> Dernières interventions enregistrées
+                        </h3>
+                        <button onclick="switchTab('interventions')" class="text-xs text-blue-400 hover:text-blue-300 font-medium">Voir tout →</button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-900/80 text-xs uppercase text-slate-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="px-5 py-3">Date</th>
+                                    <th class="px-5 py-3">Équipement</th>
+                                    <th class="px-5 py-3">Type</th>
+                                    <th class="px-5 py-3">Origine</th>
+                                    <th class="px-5 py-3">Problème / Symptôme</th>
+                                    <th class="px-5 py-3">Statut</th>
+                                    <th class="px-5 py-3 text-right">Action</th>
+                                </tr>
+                            </thead>
+                            <tbody id="dashboard-last-interventions-table" class="divide-y divide-slate-800/60">
+                                <!-- Injected dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= MODULE 2 : PARC ÉQUIPEMENTS ================= -->
+            <div id="view-equipment" class="space-y-6 hidden">
+                <div class="flex flex-col sm:flex-row justify-between gap-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <div class="flex flex-wrap items-center gap-3 flex-1">
+                        <div class="relative flex-1 min-w-[200px]">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="eq-search" oninput="renderEquipmentTable()" placeholder="Rechercher par code, nom, atelier..." class="w-full bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                        </div>
+                        <select id="eq-filter-line" onchange="renderEquipmentTable()" class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-blue-500">
+                            <option value="">Toutes les lignes</option>
+                            <option value="Ligne 1">Ligne 1</option>
+                            <option value="Ligne 2">Ligne 2</option>
+                            <option value="Utilités">Utilités</option>
+                        </select>
+                        <select id="eq-filter-status" onchange="renderEquipmentTable()" class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-blue-500">
+                            <option value="">Tous les états</option>
+                            <option value="En service">En service</option>
+                            <option value="À l'arrêt">À l'arrêt</option>
+                            <option value="En maintenance">En maintenance</option>
+                            <option value="Hors service">Hors service</option>
+                        </select>
+                        <select id="eq-filter-crit" onchange="renderEquipmentTable()" class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-blue-500">
+                            <option value="">Toutes criticités</option>
+                            <option value="Faible">Faible</option>
+                            <option value="Moyenne">Moyenne</option>
+                            <option value="Haute">Haute</option>
+                            <option value="Critique">Critique</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-xl shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-900/80 text-xs uppercase text-slate-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="px-5 py-3">Code</th>
+                                    <th class="px-5 py-3">Désignation</th>
+                                    <th class="px-5 py-3">Ligne / Atelier</th>
+                                    <th class="px-5 py-3">Catégorie</th>
+                                    <th class="px-5 py-3">État</th>
+                                    <th class="px-5 py-3">Criticité</th>
+                                    <th class="px-5 py-3 text-right">Détails</th>
+                                </tr>
+                            </thead>
+                            <tbody id="equipment-table-body" class="divide-y divide-slate-800/60">
+                                <!-- Injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= MODULE 3 : FICHE ÉQUIPEMENT ================= -->
+            <div id="view-equipment-detail" class="space-y-6 hidden">
+                <button onclick="switchTab('equipment')" class="inline-flex items-center gap-2 text-xs font-medium text-blue-400 hover:text-blue-300 bg-slate-950 px-3 py-2 rounded-lg border border-slate-800">
+                    <i data-lucide="arrow-left" class="w-4 h-4"><span>Retour au parc</span></i>
+                </button>
+
+                <div id="eq-detail-content" class="space-y-6">
+                    <!-- Rempli dynamiquement -->
+                </div>
+            </div>
+
+            <!-- ================= MODULE 4 : GESTION DES INTERVENTIONS ================= -->
+            <div id="view-interventions" class="space-y-6 hidden">
+                <div class="flex flex-col sm:flex-row justify-between gap-4 bg-slate-950 p-4 rounded-xl border border-slate-800">
+                    <div class="flex flex-wrap items-center gap-3 flex-1">
+                        <div class="relative flex-1 min-w-[200px]">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" id="int-search" oninput="renderInterventionsTable()" placeholder="Rechercher équipement, symptôme, cause..." class="w-full bg-slate-900 border border-slate-800 rounded-lg pl-9 pr-4 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                        </div>
+                        <select id="int-filter-type" onchange="renderInterventionsTable()" class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-blue-500">
+                            <option value="">Tous les types</option>
+                            <option value="Correctif">Correctif</option>
+                            <option value="Préventif">Préventif</option>
+                            <option value="Amélioration">Amélioration</option>
+                            <option value="Contrôle">Contrôle</option>
+                        </select>
+                        <select id="int-filter-origin" onchange="renderInterventionsTable()" class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-blue-500">
+                            <option value="">Toutes origines</option>
+                            <option value="Interne">Interne</option>
+                            <option value="Externe">Externe</option>
+                        </select>
+                        <select id="int-filter-status" onchange="renderInterventionsTable()" class="bg-slate-900 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:border-blue-500">
+                            <option value="">Tous statuts</option>
+                            <option value="Ouverte">Ouverte</option>
+                            <option value="En cours">En cours</option>
+                            <option value="Terminée">Terminée</option>
+                            <option value="Annulée">Annulée</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950 border border-slate-800 rounded-xl shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm text-slate-300">
+                            <thead class="bg-slate-900/80 text-xs uppercase text-slate-400 border-b border-slate-800">
+                                <tr>
+                                    <th class="px-5 py-3">N° / Date</th>
+                                    <th class="px-5 py-3">Équipement</th>
+                                    <th class="px-5 py-3">Type & Origine</th>
+                                    <th class="px-5 py-3">Symptôme / Défaillance</th>
+                                    <th class="px-5 py-3">Durée / Arrêt</th>
+                                    <th class="px-5 py-3">Statut</th>
+                                    <th class="px-5 py-3 text-right">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="interventions-table-body" class="divide-y divide-slate-800/60">
+                                <!-- Injected -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= MODULE 5 : HISTORIQUE & ANALYSE ================= -->
+            <div id="view-history" class="space-y-6 hidden">
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <!-- Analyse Pareto des défaillances -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 shadow-sm">
+                        <h3 class="text-sm font-semibold text-white flex items-center gap-2 mb-4">
+                            <i data-lucide="bar-chart-2" class="w-4 h-4 text-purple-400"></i> Analyse Pareto des Défaillances
+                        </h3>
+                        <p class="text-xs text-slate-400 mb-4">Répartition des familles de défaillances constatées sur l'ensemble du parc.</p>
+                        <div id="history-pareto-container" class="space-y-3">
+                            <!-- Injected -->
+                        </div>
+                    </div>
+
+                    <!-- Détection des récurrences -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 shadow-sm">
+                        <h3 class="text-sm font-semibold text-white flex items-center gap-2 mb-4">
+                            <i data-lucide="alert-octagon" class="w-4 h-4 text-rose-400"><span>Récurrences & Alertes automatiques</span></i>
+                        </h3>
+                        <p class="text-xs text-slate-400 mb-4">Équipements présentant des pannes répétitives nécessitant une analyse de cause.</p>
+                        <div id="history-recurrences-container" class="space-y-3">
+                            <!-- Injected -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </main>
+
+    <!-- ================= MODAL : NOUVELLE INTERVENTION ================= -->
+    <div id="modal-intervention" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="p-5 border-b border-slate-800 flex items-center justify-between sticky top-0 bg-slate-900 z-10">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i data-lucide="wrench" class="w-5 h-5 text-blue-500"></i> Enregistrer une intervention
+                </h3>
+                <button onclick="closeModal('modal-intervention')" class="text-slate-400 hover:text-white p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="form-intervention" onsubmit="saveIntervention(event)" class="p-6 space-y-4">
+                <input type="hidden" id="int-edit-id">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Équipement *</label>
+                        <select id="modal-int-eq" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <!-- Options injectées -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Type d'intervention *</label>
+                        <select id="modal-int-type" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="Correctif">Correctif (Panne)</option>
+                            <option value="Préventif">Préventif</option>
+                            <option value="Amélioration">Amélioration</option>
+                            <option value="Contrôle">Contrôle</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Origine *</label>
+                        <select id="modal-int-origin" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="Interne">Interne</option>
+                            <option value="Externe">Externe (Prestataire)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Date *</label>
+                        <input type="date" id="modal-int-date" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Statut *</label>
+                        <select id="modal-int-status" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="Terminée">Terminée</option>
+                            <option value="En cours">En cours</option>
+                            <option value="Ouverte">Ouverte</option>
+                            <option value="Annulée">Annulée</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-800 pt-4 space-y-4">
+                    <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Diagnostic & Problème</h4>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Symptôme constaté</label>
+                            <input type="text" id="modal-int-symptom" placeholder="Ex: Bruit anormal roulement" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Famille de défaillance</label>
+                            <select id="modal-int-failure" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                                <option value="Roulement moteur">Roulement moteur</option>
+                                <option value="Défaut électrique / Capteur">Défaut électrique / Capteur</option>
+                                <option value="Fuite hydraulique / pneumatique">Fuite hydraulique / pneumatique</option>
+                                <option value="Courroie / Transmission">Courroie / Transmission</option>
+                                <option value="Surchauffe mécanique">Surchauffe mécanique</option>
+                                <option value="Autre / Réglage">Autre / Réglage</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Cause identifiée</label>
+                        <input type="text" id="modal-int-cause" placeholder="Ex: Usure avancée, manque de lubrification" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <div class="border-t border-slate-800 pt-4 space-y-4">
+                    <h4 class="text-xs font-bold text-blue-400 uppercase tracking-wider">Actions & Temps</h4>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Action réalisée</label>
+                        <textarea id="modal-int-action" rows="2" placeholder="Ex: Remplacement du roulement SKF et graissage" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500"></textarea>
+                    </div>
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Durée intervention (minutes) *</label>
+                            <input type="number" id="modal-int-duration" value="90" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-medium text-slate-300 mb-1">Temps d'arrêt production (minutes) *</label>
+                            <input type="number" id="modal-int-downtime" value="60" required class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="closeModal('modal-intervention')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-colors">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-medium transition-colors">Enregistrer</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- ================= MODAL : NOUVEL ÉQUIPEMENT ================= -->
+    <div id="modal-equipment" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm hidden items-center justify-center z-50 p-4 overflow-y-auto">
+        <div class="bg-slate-900 border border-slate-800 rounded-xl max-w-xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div class="p-5 border-b border-slate-800 flex items-center justify-between sticky top-0 bg-slate-900 z-10">
+                <h3 class="text-base font-bold text-white flex items-center gap-2">
+                    <i data-lucide="cpu" class="w-5 h-5 text-blue-500"></i> Ajouter un équipement
+                </h3>
+                <button onclick="closeModal('modal-equipment')" class="text-slate-400 hover:text-white p-1">
+                    <i data-lucide="x" class="w-5 h-5"></i>
+                </button>
+            </div>
+            <form id="form-equipment" onsubmit="saveEquipment(event)" class="p-6 space-y-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Code Équipement *</label>
+                        <input type="text" id="modal-eq-code" required placeholder="Ex: CV-004" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Désignation *</label>
+                        <input type="text" id="modal-eq-name" required placeholder="Ex: Convoyeur C04" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Ligne / Atelier *</label>
+                        <select id="modal-eq-line" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="Ligne 1">Ligne 1</option>
+                            <option value="Ligne 2">Ligne 2</option>
+                            <option value="Utilités">Utilités</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Catégorie</label>
+                        <input type="text" id="modal-eq-category" placeholder="Ex: Convoyeur, Pompe, Compresseur" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">État *</label>
+                        <select id="modal-eq-status" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="En service">En service</option>
+                            <option value="À l'arrêt">À l'arrêt</option>
+                            <option value="En maintenance">En maintenance</option>
+                            <option value="Hors service">Hors service</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-medium text-slate-300 mb-1">Criticité *</label>
+                        <select id="modal-eq-crit" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                            <option value="Faible">Faible</option>
+                            <option value="Moyenne">Moyenne</option>
+                            <option value="Haute" selected>Haute</option>
+                            <option value="Critique">Critique</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-medium text-slate-300 mb-1">Fabricant & Modèle</label>
+                    <input type="text" id="modal-eq-mfg" placeholder="Ex: SEW / Nord / SKF" class="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-blue-500">
+                </div>
+
+                <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+                    <button type="button" onclick="closeModal('modal-equipment')" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg text-sm font-medium transition-colors">Annuler</button>
+                    <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white rounded-lg text-sm font-medium transition-colors">Créer l'équipement</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MAIN JAVASCRIPT APPLICATION LOGIC -->
+    <script>
+        // --- DONNÉES INITIALES DE DÉMONSTRATION ---
+        const initialEquipment = [
+            { id: 'eq-1', code: 'CV-001', name: 'Convoyeur C01', line: 'Ligne 1', category: 'Convoyeur', status: 'En service', criticality: 'Haute', mfg: 'SEW Eurodrive', commissioning: '2025-03-12' },
+            { id: 'eq-2', code: 'PM-001', name: 'Pompe P01', line: 'Ligne 1', category: 'Pompe', status: 'En service', criticality: 'Moyenne', mfg: 'KSB', commissioning: '2025-04-10' },
+            { id: 'eq-3', code: 'CP-001', name: 'Compresseur 01', line: 'Utilités', category: 'Compresseur', status: 'En service', criticality: 'Haute', mfg: 'Atlas Copco', commissioning: '2024-11-05' },
+            { id: 'eq-4', code: 'MR-001', name: 'Motoréducteur M01', line: 'Ligne 2', category: 'Motoréducteur', status: 'À l’arrêt', criticality: 'Haute', mfg: 'Nord', commissioning: '2025-01-15' },
+            { id: 'eq-5', code: 'PM-003', name: 'Pompe P03', line: 'Ligne 1', category: 'Pompe', status: 'En service', criticality: 'Haute', mfg: 'Grundfos', commissioning: '2025-02-20' },
+            { id: 'eq-6', code: 'GH-01', name: 'Groupe hydraulique GH01', line: 'Utilités', category: 'Hydraulique', status: 'En service', criticality: 'Critique', mfg: 'Bosch Rexroth', commissioning: '2024-10-01' }
+        ];
+
+        const initialInterventions = [
+            { id: 'int-1', eqId: 'eq-1', number: 'INT-2026-0042', type: 'Correctif', origin: 'Interne', date: '2026-09-12', symptom: 'Bruit important au niveau du moteur', failure: 'Roulement moteur', cause: 'Usure / défaut de lubrification', action: 'Remplacement du roulement SKF', duration: 100, downtime: 85, status: 'Terminée' },
+            { id: 'int-2', eqId: 'eq-5', number: 'INT-2026-0041', type: 'Correctif', origin: 'Externe', date: '2026-09-11', symptom: 'Fuite sur corps de pompe', failure: 'Fuite hydraulique / pneumatique', cause: 'Joint torique dégradé', action: 'Remplacement des joints par prestataire XYZ', duration: 135, downtime: 120, status: 'Terminée' },
+            { id: 'int-3', eqId: 'eq-3', number: 'INT-2026-0040', type: 'Préventif', origin: 'Interne', date: '2026-09-10', symptom: 'Maintenance préventive périodique', failure: 'Autre / Réglage', cause: 'Échéance préventive atteinte', action: 'Vidange et contrôle filtres', duration: 45, downtime: 30, status: 'Terminée' },
+            { id: 'int-4', eqId: 'eq-1', number: 'INT-2026-0035', type: 'Correctif', origin: 'Interne', date: '2026-08-02', symptom: 'Surchauffe moteur convoyeur', failure: 'Roulement moteur', cause: 'Contrainte mécanique excessive', action: 'Graissage et alignement', duration: 45, downtime: 40, status: 'Terminée' },
+            { id: 'int-5', eqId: 'eq-1', number: 'INT-2026-0028', type: 'Correctif', origin: 'Interne', date: '2026-07-15', symptom: 'Vibrations anormales', failure: 'Roulement moteur', cause: 'Défaut de montage initial', action: 'Remplacement roulement', duration: 110, downtime: 90, status: 'Terminée' },
+            { id: 'int-6', eqId: 'eq-1', number: 'INT-2026-0019', type: 'Correctif', origin: 'Interne', date: '2026-06-10', symptom: 'Coupure thermique', failure: 'Roulement moteur', cause: 'Usure prématurée', action: 'Contrôle et nettoyage', duration: 60, downtime: 50, status: 'Terminée' },
+            { id: 'int-7', eqId: 'eq-4', number: 'INT-2026-0015', type: 'Correctif', origin: 'Externe', date: '2026-05-20', symptom: 'Blocage arbre réducteur', failure: 'Courroie / Transmission', cause: 'Surcharge', action: 'Démontage et réalignement', duration: 180, downtime: 150, status: 'Terminée' }
+        ];
+
+        // --- GESTION DU STORAGE LOCAL ---
+        function loadData() {
+            if (!localStorage.getItem('gmao_equipment')) {
+                localStorage.setItem('gmao_equipment', JSON.stringify(initialEquipment));
+            }
+            if (!localStorage.getItem('gmao_interventions')) {
+                localStorage.setItem('gmao_interventions', JSON.stringify(initialInterventions));
+            }
+        }
+
+        function getEquipment() {
+            return JSON.parse(localStorage.getItem('gmao_equipment')) || [];
+        }
+
+        function getInterventions() {
+            return JSON.parse(localStorage.getItem('gmao_interventions')) || [];
+        }
+
+        function saveEquipmentData(data) {
+            localStorage.setItem('gmao_equipment', JSON.stringify(data));
+        }
+
+        function saveInterventionsData(data) {
+            localStorage.setItem('gmao_interventions', JSON.stringify(data));
+        }
+
+        function resetDemoData() {
+            if (confirm("Réinitialiser toutes les données avec le jeu de démonstration initial ?")) {
+                localStorage.setItem('gmao_equipment', JSON.stringify(initialEquipment));
+                localStorage.setItem('gmao_interventions', JSON.stringify(initialInterventions));
+                initApp();
+            }
+        }
+
+        // --- NAVIGATION ---
+        function switchTab(tabId, param = null) {
+            ['dashboard', 'equipment', 'equipment-detail', 'interventions', 'history'].forEach(t => {
+                document.getElementById(`view-${t}`).classList.add('hidden');
+            });
+            document.querySelectorAll('aside nav button').forEach(b => {
+                b.classList.remove('bg-blue-600', 'text-white', 'shadow-sm');
+                b.classList.add('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-900');
+            });
+
+            document.getElementById(`view-${tabId}`).classList.remove('hidden');
+            if (['dashboard', 'equipment', 'interventions', 'history'].includes(tabId)) {
+                const activeBtn = document.getElementById(`nav-${tabId}`);
+                if (activeBtn) {
+                    activeBtn.classList.add('bg-blue-600', 'text-white', 'shadow-sm');
+                    activeBtn.classList.remove('text-slate-400', 'hover:text-slate-200', 'hover:bg-slate-900');
+                }
+            }
+
+            const titles = {
+                'dashboard': 'Dashboard Maintenance',
+                'equipment': 'Parc Équipements',
+                'equipment-detail': 'Fiche & Fil de vie Équipement',
+                'interventions': 'Gestion des Interventions',
+                'history': 'Historique & Analyses Avancées'
+            };
+            document.getElementById('page-title').innerText = titles[tabId] || 'GMAO V0';
+
+            if (tabId === 'dashboard') renderDashboard();
+            if (tabId === 'equipment') renderEquipmentTable();
+            if (tabId === 'equipment-detail' && param) renderEquipmentDetail(param);
+            if (tabId === 'interventions') renderInterventionsTable();
+            if (tabId === 'history') renderHistoryAnalysis();
+
+            lucide.createIcons();
+            document.getElementById('main-scroll-container').scrollTop = 0;
+        }
+
+        // --- MODALS ---
+        function openNewInterventionModal(eqId = null) {
+            const eqList = getEquipment();
+            const select = document.getElementById('modal-int-eq');
+            select.innerHTML = eqList.map(e => `<option value="${e.id}" ${e.id === eqId ? 'selected' : ''}>${e.code} - ${e.name}</option>`).join('');
+            document.getElementById('modal-int-date').value = new Date().toISOString().split('T')[0];
+            document.getElementById('modal-intervention').classList.remove('hidden');
+            document.getElementById('modal-intervention').classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function openNewEquipmentModal() {
+            document.getElementById('modal-equipment').classList.remove('hidden');
+            document.getElementById('modal-equipment').classList.add('flex');
+            lucide.createIcons();
+        }
+
+        function closeModal(modalId) {
+            document.getElementById(modalId).classList.add('hidden');
+            document.getElementById(modalId).classList.remove('flex');
+        }
+
+        // --- ENREGISTREMENT ---
+        function saveIntervention(e) {
+            e.preventDefault();
+            const interventions = getInterventions();
+            const newInt = {
+                id: 'int-' + Date.now(),
+                number: 'INT-2026-' + Math.floor(1000 + Math.random() * 9000),
+                eqId: document.getElementById('modal-int-eq').value,
+                type: document.getElementById('modal-int-type').value,
+                origin: document.getElementById('modal-int-origin').value,
+                date: document.getElementById('modal-int-date').value,
+                symptom: document.getElementById('modal-int-symptom').value || 'Intervention de maintenance',
+                failure: document.getElementById('modal-int-failure').value,
+                cause: document.getElementById('modal-int-cause').value || 'Non renseignée',
+                action: document.getElementById('modal-int-action').value || 'Action standard',
+                duration: parseInt(document.getElementById('modal-int-duration').value) || 60,
+                downtime: parseInt(document.getElementById('modal-int-downtime').value) || 30,
+                status: document.getElementById('modal-int-status').value
+            };
+            interventions.unshift(newInt);
+            saveInterventionsData(interventions);
+            closeModal('modal-intervention');
+            initApp();
+            // Rafraîchir la vue active courante
+            if (!document.getElementById('view-dashboard').classList.contains('hidden')) renderDashboard();
+            if (!document.getElementById('view-interventions').classList.contains('hidden')) renderInterventionsTable();
+        }
+
+        function saveEquipment(e) {
+            e.preventDefault();
+            const equipment = getEquipment();
+            const newEq = {
+                id: 'eq-' + Date.now(),
+                code: document.getElementById('modal-eq-code').value,
+                name: document.getElementById('modal-eq-name').value,
+                line: document.getElementById('modal-eq-line').value,
+                category: document.getElementById('modal-eq-category').value || 'Équipement',
+                status: document.getElementById('modal-eq-status').value,
+                criticality: document.getElementById('modal-eq-crit').value,
+                mfg: document.getElementById('modal-eq-mfg').value || 'Standard',
+                commissioning: new Date().toISOString().split('T')[0]
+            };
+            equipment.push(newEq);
+            saveEquipmentData(equipment);
+            closeModal('modal-equipment');
+            initApp();
+            if (!document.getElementById('view-equipment').classList.contains('hidden')) renderEquipmentTable();
+        }
+
+        function deleteIntervention(id) {
+            if (confirm("Supprimer cette intervention de l'historique ?")) {
+                let ints = getInterventions();
+                ints = ints.filter(i => i.id !== id);
+                saveInterventionsData(ints);
+                initApp();
+                if (!document.getElementById('view-interventions').classList.contains('hidden')) renderInterventionsTable();
+            }
+        }
+
+        // --- RENDU : DASHBOARD ---
+        function renderDashboard() {
+            const eqList = getEquipment();
+            const intList = getInterventions();
+
+            const eqCount = eqList.length;
+            const intCount = intList.length;
+            const failList = intList.filter(i => i.type === 'Correctif');
+            const failCount = failList.length;
+
+            const totalDowntimeMin = intList.reduce((acc, curr) => acc + (curr.downtime || 0), 0);
+            const totalDowntimeHours = (totalDowntimeMin / 60).toFixed(1);
+
+            const totalDurationMin = failList.reduce((acc, curr) => acc + (curr.duration || 0), 0);
+            const mttrMin = failCount > 0 ? Math.round(totalDurationMin / failCount) : 0;
+            const mtbfHours = eqCount > 0 && failCount > 0 ? Math.round((eqCount * 720 - totalDowntimeMin / 60) / failCount) : 126;
+
+            document.getElementById('kpi-eq-count').innerText = eqCount;
+            document.getElementById('kpi-int-count').innerText = intCount;
+            document.getElementById('kpi-fail-count').innerText = failCount;
+            document.getElementById('kpi-downtime').innerText = totalDowntimeHours + ' h';
+            document.getElementById('kpi-mttr').innerText = mttrMin + ' min';
+            document.getElementById('kpi-mtbf').innerText = mtbfHours + ' h';
+
+            // Top équipements sollicités
+            const eqStats = {};
+            eqList.forEach(eq => eqStats[eq.id] = { name: eq.name, code: eq.code, count: 0 });
+            intList.forEach(i => {
+                if (eqStats[i.eqId]) eqStats[i.eqId].count++;
+            });
+            const sortedEq = Object.values(eqStats).sort((a, b) => b.count - a.count).slice(0, 4);
+
+            let topHtml = '';
+            sortedEq.forEach(item => {
+                const maxCount = sortedEq[0].count || 1;
+                const pct = Math.round((item.count / maxCount) * 100);
+                topHtml += `
+                    <div>
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="text-white font-medium">${item.code} - ${item.name}</span>
+                            <span class="text-blue-400 font-bold">${item.count} int.</span>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-full h-2">
+                            <div class="bg-blue-600 h-2 rounded-full" style="width: ${Math.max(pct, 10)}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('dashboard-top-equipment').innerHTML = topHtml || '<p class="text-xs text-slate-500">Aucune donnée</p>';
+
+            // Score de surveillance & Watchlist
+            let watchlistHtml = '';
+            const scores = eqList.map(eq => {
+                const eqInts = intList.filter(i => i.eqId === eq.id);
+                const fails = eqInts.filter(i => i.type === 'Correctif').length;
+                const dt = eqInts.reduce((a, c) => a + c.downtime, 0);
+                let score = fails * 15 + Math.round(dt / 10);
+                if (eq.criticality === 'Critique') score += 30;
+                if (eq.criticality === 'Haute') score += 15;
+                return { eq, fails, dt, score: Math.min(score, 100) };
+            }).sort((a, b) => b.score - a.score).slice(0, 3);
+
+            scores.forEach(item => {
+                watchlistHtml += `
+                    <div onclick="switchTab('equipment-detail', '${item.eq.id}')" class="p-3 bg-slate-900/60 hover:bg-slate-900 rounded-lg border border-slate-800/80 cursor-pointer transition-colors flex items-center justify-between">
+                        <div>
+                            <div class="font-medium text-xs text-white">${item.eq.code} - ${item.eq.name}</div>
+                            <div class="text-[11px] text-slate-400 mt-0.5">${item.fails} pannes | ${(item.dt/60).toFixed(1)}h d'arrêt</div>
+                        </div>
+                        <div class="text-right">
+                            <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-bold ${item.score > 70 ? 'bg-rose-500/10 text-rose-400' : 'bg-amber-500/10 text-amber-400'}">
+                                ${item.score} / 100
+                            </span>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('dashboard-watchlist').innerHTML = watchlistHtml || '<p class="text-xs text-slate-500">Aucune alerte</p>';
+
+            // Pareto & Répartition rapide
+            const failuresCount = {};
+            intList.forEach(i => {
+                if (i.failure) {
+                    failuresCount[i.failure] = (failuresCount[i.failure] || 0) + 1;
+                }
+            });
+            const sortedFailures = Object.entries(failuresCount).sort((a, b) => b[1] - a[1]).slice(0, 3);
+            let paretoHtml = `<div class="space-y-2">`;
+            const totalF = intList.length || 1;
+            sortedFailures.forEach(([failName, count]) => {
+                const p = Math.round((count / totalF) * 100);
+                paretoHtml += `
+                    <div class="text-xs">
+                        <div class="flex justify-between text-slate-300 mb-1">
+                            <span class="truncate max-w-[180px]" title="${failName}">${failName}</span>
+                            <span class="font-mono text-purple-400">${p}% (${count})</span>
+                        </div>
+                        <div class="w-full bg-slate-900 rounded-full h-1.5">
+                            <div class="bg-purple-500 h-1.5 rounded-full" style="width: ${p}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            paretoHtml += `</div>`;
+            document.getElementById('dashboard-pareto').innerHTML = paretoHtml;
+
+            // Table des dernières interventions
+            let lastHtml = '';
+            intList.slice(0, 5).forEach(i => {
+                const eq = eqList.find(e => e.id === i.eqId) || { code: '---', name: 'Inconnu' };
+                lastHtml += `
+                    <tr class="hover:bg-slate-900/50 transition-colors">
+                        <td class="px-5 py-3 font-mono text-xs text-slate-400">${i.date}</td>
+                        <td class="px-5 py-3 font-medium text-white">${eq.code} - ${eq.name}</td>
+                        <td class="px-5 py-3"><span class="px-2 py-0.5 rounded text-xs bg-slate-800 text-slate-300">${i.type}</span></td>
+                        <td class="px-5 py-3"><span class="px-2 py-0.5 rounded text-xs ${i.origin === 'Externe' ? 'bg-indigo-500/10 text-indigo-400' : 'bg-slate-800 text-slate-400'}">${i.origin}</span></td>
+                        <td class="px-5 py-3 text-slate-300">${i.symptom}</td>
+                        <td class="px-5 py-3"><span class="px-2 py-0.5 rounded text-xs font-medium ${i.status === 'Terminée' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">${i.status}</span></td>
+                        <td class="px-5 py-3 text-right">
+                            <button onclick="switchTab('equipment-detail', '${eq.id}')" class="text-blue-400 hover:text-blue-300 text-xs font-medium">Voir machine</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('dashboard-last-interventions-table').innerHTML = lastHtml || '<tr><td colspan="7" class="px-5 py-4 text-center text-slate-500">Aucune intervention enregistrée</td></tr>';
+            lucide.createIcons();
+        }
+
+        // --- RENDU : PARC ÉQUIPEMENTS ---
+        function renderEquipmentTable() {
+            const eqList = getEquipment();
+            const search = document.getElementById('eq-search').value.toLowerCase();
+            const filterLine = document.getElementById('eq-filter-line').value;
+            const filterStatus = document.getElementById('eq-filter-status').value;
+            const filterCrit = document.getElementById('eq-filter-crit').value;
+
+            const filtered = eqList.filter(eq => {
+                const matchSearch = eq.code.toLowerCase().includes(search) || eq.name.toLowerCase().includes(search) || eq.category.toLowerCase().includes(search);
+                const matchLine = !filterLine || eq.line === filterLine;
+                const matchStatus = !filterStatus || eq.status === filterStatus;
+                const matchCrit = !filterCrit || eq.criticality === filterCrit;
+                return matchSearch && matchLine && matchStatus && matchCrit;
+            });
+
+            let html = '';
+            filtered.forEach(eq => {
+                const critColor = eq.criticality === 'Critique' ? 'bg-rose-500/10 text-rose-400' : eq.criticality === 'Haute' ? 'bg-amber-500/10 text-amber-400' : 'bg-blue-500/10 text-blue-400';
+                const statusColor = eq.status === 'En service' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400';
+                html += `
+                    <tr class="hover:bg-slate-900/50 transition-colors cursor-pointer" onclick="switchTab('equipment-detail', '${eq.id}')">
+                        <td class="px-5 py-3 font-mono font-bold text-white">${eq.code}</td>
+                        <td class="px-5 py-3 font-medium text-white">${eq.name}</td>
+                        <td class="px-5 py-3 text-slate-300">${eq.line}</td>
+                        <td class="px-5 py-3 text-slate-400">${eq.category}</td>
+                        <td class="px-5 py-3"><span class="px-2 py-0.5 rounded text-xs font-medium ${statusColor}">${eq.status}</span></td>
+                        <td class="px-5 py-3"><span class="px-2 py-0.5 rounded text-xs font-medium ${critColor}">${eq.criticality}</span></td>
+                        <td class="px-5 py-3 text-right">
+                            <button class="text-blue-400 hover:text-blue-300 text-xs font-medium">Consulter →</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('equipment-table-body').innerHTML = html || '<tr><td colspan="7" class="px-5 py-4 text-center text-slate-500">Aucun équipement trouvé</td></tr>';
+            lucide.createIcons();
+        }
+
+        // --- RENDU : FICHE ÉQUIPEMENT & FIL DE VIE ---
+        function renderEquipmentDetail(eqId) {
+            const eqList = getEquipment();
+            const eq = eqList.find(e => e.id === eqId);
+            if (!eq) {
+                document.getElementById('eq-detail-content').innerHTML = '<p class="text-slate-400">Équipement introuvable.</p>';
+                return;
+            }
+
+            const intList = getInterventions().filter(i => i.eqId === eqId);
+            const fails = intList.filter(i => i.type === 'Correctif');
+            const totalDowntime = intList.reduce((acc, curr) => acc + (curr.downtime || 0), 0);
+            const totalDuration = fails.reduce((acc, curr) => acc + (curr.duration || 0), 0);
+            const mttr = fails.length > 0 ? Math.round(totalDuration / fails.length) : 0;
+            
+            // Score de surveillance machine
+            let score = fails.length * 15 + Math.round(totalDowntime / 10);
+            if (eq.criticality === 'Critique') score += 30;
+            if (eq.criticality === 'Haute') score += 15;
+            score = Math.min(score, 100);
+
+            // Détection de récurrence spécifique à cette machine
+            const failureCounts = {};
+            fails.forEach(f => {
+                if (f.failure) failureCounts[f.failure] = (failureCounts[f.failure] || 0) + 1;
+            });
+            const topFailure = Object.entries(failureCounts).sort((a,b) => b[1] - a[1])[0] || ['Aucune', 0];
+
+            let html = `
+                <div class="bg-slate-950 border border-slate-800 rounded-xl p-6 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <h2 class="text-xl font-bold text-white">${eq.name}</h2>
+                            <span class="font-mono text-xs bg-slate-900 border border-slate-800 px-2.5 py-1 rounded text-blue-400">${eq.code}</span>
+                            <span class="px-2.5 py-1 rounded text-xs font-medium ${eq.status === 'En service' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'}">${eq.status}</span>
+                        </div>
+                        <p class="text-xs text-slate-400 mt-1">Localisation : ${eq.line} | Fabricant : ${eq.mfg} | Mis en service : ${eq.commissioning}</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <div class="text-right bg-slate-900 border border-slate-800 px-4 py-2 rounded-lg">
+                            <span class="text-[10px] text-slate-400 uppercase tracking-wider block">Score de surveillance</span>
+                            <span class="text-lg font-bold ${score > 70 ? 'text-rose-400' : 'text-amber-400'}">${score} / 100</span>
+                        </div>
+                        <button onclick="openNewInterventionModal('${eq.id}')" class="flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white px-4 py-2.5 rounded-lg text-sm font-medium transition-colors shadow">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Nouvelle intervention
+                        </button>
+                    </div>
+                </div>
+
+                <!-- KPI Cards Machine -->
+                <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                        <span class="text-xs text-slate-400 uppercase">Interventions</span>
+                        <div class="text-2xl font-bold text-white mt-1">${intList.length}</div>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                        <span class="text-xs text-slate-400 uppercase">Pannes Correctives</span>
+                        <div class="text-2xl font-bold text-amber-400 mt-1">${fails.length}</div>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                        <span class="text-xs text-slate-400 uppercase">Temps d'arrêt cumulé</span>
+                        <div class="text-2xl font-bold text-rose-400 mt-1">${(totalDowntime/60).toFixed(1)} h</div>
+                    </div>
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-4">
+                        <span class="text-xs text-slate-400 uppercase">MTTR moyen</span>
+                        <div class="text-2xl font-bold text-white mt-1">${mttr} min</div>
+                    </div>
+                </div>
+
+                ${topFailure[1] >= 2 ? `
+                    <div class="bg-amber-950/20 border border-amber-800/60 rounded-xl p-4 flex items-start gap-3">
+                        <i data-lucide="alert-triangle" class="w-5 h-5 text-amber-400 shrink-0 mt-0.5"></i>
+                        <div>
+                            <h4 class="text-sm font-semibold text-amber-300">Récurrence identifiée : ${topFailure[0]} (${topFailure[1]} occurrences)</h4>
+                            <p class="text-xs text-amber-200/80 mt-1">Cette défaillance réapparaît fréquemment sur cet équipement. Piste d'analyse recommandée : vérifier la lubrification, l'alignement et les conditions de montage avant tout remplacement systématique.</p>
+                        </div>
+                    </div>
+                ` : ''}
+
+                <!-- Fil de vie & Historique -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Historique table -->
+                    <div class="lg:col-span-2 bg-slate-950 border border-slate-800 rounded-xl shadow-sm overflow-hidden flex flex-col">
+                        <div class="p-5 border-b border-slate-800">
+                            <h3 class="text-sm font-semibold text-white">Historique des interventions de l'équipement</h3>
+                        </div>
+                        <div class="overflow-x-auto flex-1">
+                            <table class="w-full text-left text-sm text-slate-300">
+                                <thead class="bg-slate-900/80 text-xs uppercase text-slate-400 border-b border-slate-800">
+                                    <tr>
+                                        <th class="px-4 py-3">Date</th>
+                                        <th class="px-4 py-3">Type</th>
+                                        <th class="px-4 py-3">Symptôme / Défaillance</th>
+                                        <th class="px-4 py-3">Action</th>
+                                        <th class="px-4 py-3">Durée</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-slate-800/60">
+            `;
+
+            if (intList.length === 0) {
+                html += `<tr><td colspan="5" class="px-4 py-6 text-center text-slate-500">Aucune intervention enregistrée pour cette machine.</td></tr>`;
+            } else {
+                intList.forEach(i => {
+                    html += `
+                        <tr class="hover:bg-slate-900/50">
+                            <td class="px-4 py-3 font-mono text-xs text-slate-400">${i.date}</td>
+                            <td class="px-4 py-3"><span class="px-2 py-0.5 rounded text-xs bg-slate-800 text-slate-300">${i.type}</span></td>
+                            <td class="px-4 py-3 text-white">${i.symptom} <br><span class="text-xs text-slate-400">${i.failure}</span></td>
+                            <td class="px-4 py-3 text-slate-300 text-xs">${i.action}</td>
+                            <td class="px-4 py-3 font-mono text-xs text-slate-300">${i.duration} min</td>
+                        </tr>
+                    `;
+                });
+            }
+
+            html += `
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Fil de vie Chronologique -->
+                    <div class="bg-slate-950 border border-slate-800 rounded-xl p-5 shadow-sm">
+                        <h3 class="text-sm font-semibold text-white mb-4 flex items-center gap-2">
+                            <i data-lucide="git-commit" class="w-4 h-4 text-blue-400"></i> Fil de vie chronologique
+                        </h3>
+                        <div class="space-y-4 relative border-l border-slate-800 ml-3 pl-4 py-1">
+                            <div class="relative">
+                                <div class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full bg-emerald-500 ring-4 ring-slate-950"></div>
+                                <div class="text-xs font-mono text-slate-400">${eq.commissioning}</div>
+                                <div class="text-xs font-semibold text-white">Mise en service</div>
+                            </div>
+            `;
+
+            intList.sort((a,b) => new Date(a.date) - new Date(b.date)).forEach(i => {
+                html += `
+                    <div class="relative">
+                        <div class="absolute -left-[21px] top-1 w-2.5 h-2.5 rounded-full ${i.type === 'Correctif' ? 'bg-amber-500' : 'bg-blue-500'} ring-4 ring-slate-950"></div>
+                        <div class="text-xs font-mono text-slate-400">${i.date} - ${i.type}</div>
+                        <div class="text-xs font-semibold text-white">${i.symptom}</div>
+                        <div class="text-[11px] text-slate-400">→ ${i.action}</div>
+                    </div>
+                `;
+            });
+
+            html += `
+                        </div>
+                    </div>
+                </div>
+            `;
+
+            document.getElementById('eq-detail-content').innerHTML = html;
+            switchTab('equipment-detail');
+        }
+
+        // --- RENDU : GESTION DES INTERVENTIONS ---
+        function renderInterventionsTable() {
+            const intList = getInterventions();
+            const eqList = getEquipment();
+            const search = document.getElementById('int-search').value.toLowerCase();
+            const filterType = document.getElementById('int-filter-type').value;
+            const filterOrigin = document.getElementById('int-filter-origin').value;
+            const filterStatus = document.getElementById('int-filter-status').value;
+
+            const filtered = intList.filter(i => {
+                const eq = eqList.find(e => e.id === i.eqId) || { code: '', name: '' };
+                const matchSearch = i.number.toLowerCase().includes(search) || eq.code.toLowerCase().includes(search) || eq.name.toLowerCase().includes(search) || i.symptom.toLowerCase().includes(search);
+                const matchType = !filterType || i.type === filterType;
+                const matchOrigin = !filterOrigin || i.origin === filterOrigin;
+                const matchStatus = !filterStatus || i.status === filterStatus;
+                return matchSearch && matchType && matchOrigin && matchStatus;
+            });
+
+            let html = '';
+            filtered.forEach(i => {
+                const eq = eqList.find(e => e.id === i.eqId) || { code: '---', name: 'Inconnu', id: '' };
+                html += `
+                    <tr class="hover:bg-slate-900/50 transition-colors">
+                        <td class="px-5 py-3">
+                            <div class="font-mono text-xs font-bold text-white">${i.number}</div>
+                            <div class="text-[11px] text-slate-400">${i.date}</div>
+                        </td>
+                        <td class="px-5 py-3 font-medium text-white cursor-pointer hover:underline" onclick="switchTab('equipment-detail', '${eq.id}')">${eq.code} - ${eq.name}</td>
+                        <td class="px-5 py-3">
+                            <span class="px-2 py-0.5 rounded text-xs bg-slate-800 text-slate-300 mr-1">${i.type}</span>
+                            <span class="px-2 py-0.5 rounded text-xs ${i.origin === 'Externe' ? 'bg-indigo-500/10 text-indigo-400' : 'bg-slate-800 text-slate-400'}">${i.origin}</span>
+                        </td>
+                        <td class="px-5 py-3 text-slate-300">
+                            <div>${i.symptom}</div>
+                            <div class="text-xs text-slate-400">Défaillance : ${i.failure}</div>
+                        </td>
+                        <td class="px-5 py-3 font-mono text-xs text-slate-300">
+                            <div>Durée : ${i.duration} min</div>
+                            <div class="text-rose-400">Arrêt : ${i.downtime} min</div>
+                        </td>
+                        <td class="px-5 py-3"><span class="px-2 py-0.5 rounded text-xs font-medium ${i.status === 'Terminée' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-amber-500/10 text-amber-400'}">${i.status}</span></td>
+                        <td class="px-5 py-3 text-right">
+                            <button onclick="deleteIntervention('${i.id}')" class="text-rose-400 hover:text-rose-300 text-xs font-medium">Supprimer</button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('interventions-table-body').innerHTML = html || '<tr><td colspan="7" class="px-5 py-4 text-center text-slate-500">Aucune intervention trouvée</td></tr>';
+            lucide.createIcons();
+        }
+
+        // --- RENDU : HISTORIQUE ET ANALYSE (PARETO & RÉCURRENCES) ---
+        function renderHistoryAnalysis() {
+            const intList = getInterventions();
+            const eqList = getEquipment();
+
+            // Pareto
+            const failuresCount = {};
+            intList.forEach(i => {
+                if (i.failure) failuresCount[i.failure] = (failuresCount[i.failure] || 0) + 1;
+            });
+            const sortedFailures = Object.entries(failuresCount).sort((a, b) => b[1] - a[1]);
+            const totalFailures = intList.length || 1;
+
+            let paretoHtml = '';
+            sortedFailures.forEach(([failName, count]) => {
+                const p = Math.round((count / totalFailures) * 100);
+                paretoHtml += `
+                    <div class="p-3 bg-slate-900 rounded-lg border border-slate-800">
+                        <div class="flex justify-between text-xs mb-1">
+                            <span class="font-medium text-white">${failName}</span>
+                            <span class="font-mono text-purple-400">${p}% (${count} interventions)</span>
+                        </div>
+                        <div class="w-full bg-slate-950 rounded-full h-2">
+                            <div class="bg-purple-600 h-2 rounded-full" style="width: ${p}%"></div>
+                        </div>
+                    </div>
+                `;
+            });
+            document.getElementById('history-pareto-container').innerHTML = paretoHtml || '<p class="text-xs text-slate-500">Pas assez de données pour l’analyse Pareto.</p>';
+
+            // Récurrences globales
+            let recurrencesHtml = '';
+            eqList.forEach(eq => {
+                const eqInts = intList.filter(i => i.eqId === eq.id);
+                const fCounts = {};
+                eqInts.forEach(i => {
+                    if (i.failure) fCounts[i.failure] = (fCounts[i.failure] || 0) + 1;
+                });
+                Object.entries(fCounts).forEach(([failName, count]) => {
+                    if (count >= 2) {
+                        recurrencesHtml += `
+                            <div onclick="switchTab('equipment-detail', '${eq.id}')" class="p-3 bg-rose-950/20 hover:bg-rose-950/30 border border-rose-900/50 rounded-lg cursor-pointer transition-colors flex items-center justify-between">
+                                <div>
+                                    <div class="font-semibold text-xs text-rose-300">${eq.code} - ${eq.name}</div>
+                                    <div class="text-[11px] text-slate-300 mt-0.5">Problème récurrent : ${failName}</div>
+                                </div>
+                                <div class="text-right">
+                                    <span class="bg-rose-500/20 text-rose-300 px-2 py-0.5 rounded text-xs font-bold">${count} occurrences</span>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+            });
+            document.getElementById('history-recurrences-container').innerHTML = recurrencesHtml || '<p class="text-xs text-slate-500">Aucune récurrence critique détectée.</p>';
+            lucide.createIcons();
+        }
+
+        // --- INITIALISATION ---
+        function initApp() {
+            loadData();
+            renderDashboard();
+            lucide.createIcons();
+        }
+
+        window.onload = initApp;
+    </script>
+</body>
+</html>

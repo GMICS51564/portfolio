@@ -1,0 +1,1012 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VITA V1 — GMAO & Pilotage Maintenance</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest"></script>
+<style>
+  html { scroll-behavior:smooth; }
+  body { background:#0b1120; color:#e5e7eb; font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif; }
+  .panel { background:rgba(15,23,42,.82); border:1px solid #263247; border-radius:16px; box-shadow:0 10px 30px rgba(0,0,0,.16); }
+  .panel-soft { background:#111827; border:1px solid #253247; border-radius:12px; }
+  .input { width:100%; background:#0b1220; border:1px solid #334155; border-radius:9px; padding:9px 11px; color:#e5e7eb; outline:none; }
+  .input:focus { border-color:#60a5fa; box-shadow:0 0 0 3px rgba(96,165,250,.1); }
+  select.input { appearance:auto; }
+  .btn { display:inline-flex; align-items:center; justify-content:center; gap:7px; border-radius:9px; padding:9px 13px; font-weight:600; font-size:13px; border:1px solid #334155; transition:.15s; cursor:pointer; }
+  .btn:hover { transform:translateY(-1px); }
+  .btn-primary { background:#2563eb; border-color:#3b82f6; color:white; }
+  .btn-secondary { background:#172033; color:#dbeafe; }
+  .btn-danger { background:#3a151b; border-color:#7f1d1d; color:#fecaca; }
+  .btn-ghost { background:transparent; border-color:transparent; color:#94a3b8; }
+  .nav-item { width:100%; display:flex; align-items:center; gap:11px; padding:10px 12px; border-radius:10px; color:#94a3b8; font-size:14px; cursor:pointer; text-align:left; }
+  .nav-item:hover { background:#172033; color:#e2e8f0; }
+  .nav-item.active { background:#172554; color:#bfdbfe; border:1px solid #1d4ed8; }
+  .badge { display:inline-flex; align-items:center; gap:5px; padding:4px 8px; border-radius:999px; font-size:11px; font-weight:700; white-space:nowrap; }
+  .badge-green { background:#052e1a; color:#86efac; border:1px solid #166534; }
+  .badge-red { background:#3b1118; color:#fca5a5; border:1px solid #7f1d1d; }
+  .badge-orange { background:#3b2108; color:#fdba74; border:1px solid #9a3412; }
+  .badge-blue { background:#0c2442; color:#93c5fd; border:1px solid #1d4ed8; }
+  .badge-gray { background:#1e293b; color:#cbd5e1; border:1px solid #334155; }
+  .kpi { min-height:118px; }
+  .table-wrap { overflow:auto; border-radius:12px; border:1px solid #263247; }
+  table { width:100%; border-collapse:collapse; min-width:900px; }
+  th { text-align:left; font-size:11px; text-transform:uppercase; letter-spacing:.06em; color:#64748b; background:#0d1525; padding:12px; border-bottom:1px solid #263247; }
+  td { padding:12px; border-bottom:1px solid #1e293b; font-size:13px; color:#cbd5e1; }
+  tr:last-child td { border-bottom:0; }
+  tr:hover td { background:#111b2d; }
+  .bar-bg { height:8px; background:#1e293b; border-radius:999px; overflow:hidden; }
+  .bar { height:100%; background:#3b82f6; border-radius:999px; }
+  .modal-backdrop { position:fixed; inset:0; background:rgba(2,6,23,.78); backdrop-filter:blur(5px); z-index:50; display:none; align-items:center; justify-content:center; padding:20px; }
+  .modal { width:min(980px,100%); max-height:92vh; overflow:auto; background:#0f172a; border:1px solid #334155; border-radius:18px; box-shadow:0 25px 80px rgba(0,0,0,.5); }
+  .toast { position:fixed; right:22px; bottom:22px; z-index:100; background:#0f172a; border:1px solid #334155; padding:12px 15px; border-radius:11px; box-shadow:0 20px 50px rgba(0,0,0,.35); display:none; }
+  .timeline { border-left:2px solid #334155; margin-left:8px; padding-left:20px; }
+  .timeline-item { position:relative; margin-bottom:20px; }
+  .timeline-item:before { content:""; position:absolute; width:9px; height:9px; border-radius:50%; background:#3b82f6; left:-26px; top:5px; box-shadow:0 0 0 4px #0f172a; }
+  .scrollbar::-webkit-scrollbar { width:7px; height:7px; }
+  .scrollbar::-webkit-scrollbar-thumb { background:#334155; border-radius:10px; }
+  .empty { padding:45px 20px; text-align:center; color:#64748b; }
+  @media(max-width:1024px) {
+    aside { width:82px !important; }
+    aside .brand-text, aside .nav-label, aside .user-info { display:none; }
+    main { margin-left:82px !important; }
+  }
+  @media(max-width:720px) {
+    aside { display:none; }
+    main { margin-left:0 !important; }
+    .mobile-top { display:flex !important; }
+  }
+  .mobile-top { display:none; }
+</style>
+</head>
+
+<body>
+<div id="toast" class="toast"></div>
+
+<!-- SIDEBAR -->
+<aside class="fixed left-0 top-0 bottom-0 w-64 bg-[#0b1220] border-r border-slate-800 z-30 flex flex-col">
+  <div class="p-5 border-b border-slate-800">
+    <div class="flex items-center gap-3">
+      <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center shadow-lg shadow-blue-900/30">
+        <i data-lucide="factory" class="w-5 h-5 text-white"></i>
+      </div>
+      <div class="brand-text">
+        <div class="font-black tracking-wide text-white">VITA</div>
+        <div class="text-[10px] text-slate-500 uppercase tracking-widest">Maintenance Intelligence</div>
+      </div>
+    </div>
+    <div class="mt-3 inline-flex badge badge-blue">V1 • GMAO opérationnelle</div>
+  </div>
+
+  <nav class="p-3 space-y-1 flex-1 overflow-y-auto scrollbar">
+    <div class="px-3 pt-2 pb-2 text-[10px] uppercase tracking-widest text-slate-600 nav-label">Pilotage</div>
+    <button class="nav-item active" data-view="dashboard"><i data-lucide="layout-dashboard"></i><span class="nav-label">Dashboard</span></button>
+
+    <div class="px-3 pt-4 pb-2 text-[10px] uppercase tracking-widest text-slate-600 nav-label">Maintenance</div>
+    <button class="nav-item" data-view="equipment"><i data-lucide="boxes"></i><span class="nav-label">Parc équipements</span></button>
+    <button class="nav-item" data-view="interventions"><i data-lucide="wrench"></i><span class="nav-label">Interventions</span></button>
+    <button class="nav-item" data-view="preventive"><i data-lucide="calendar-cog"></i><span class="nav-label">Maintenance préventive</span></button>
+    <button class="nav-item" data-view="providers"><i data-lucide="building-2"></i><span class="nav-label">Prestataires</span></button>
+    <button class="nav-item" data-view="documents"><i data-lucide="folder-open"></i><span class="nav-label">Documentation</span></button>
+
+    <div class="px-3 pt-4 pb-2 text-[10px] uppercase tracking-widest text-slate-600 nav-label">Données</div>
+    <button class="nav-item" data-view="history"><i data-lucide="search"></i><span class="nav-label">Historique & Recherche</span></button>
+    <button class="nav-item" data-view="kimpa"><i data-lucide="brain-circuit"></i><span class="nav-label">KIMPA • Analyse industrielle</span><span class="ml-auto badge badge-blue">4.0</span></button>
+    <button class="nav-item" data-view="notifications"><i data-lucide="bell"></i><span class="nav-label">Notifications</span><span id="notification-count" class="ml-auto badge badge-red">0</span></button>
+
+    <div class="px-3 pt-4 pb-2 text-[10px] uppercase tracking-widest text-slate-600 nav-label">Administration</div>
+    <button class="nav-item" data-view="admin"><i data-lucide="settings"></i><span class="nav-label">Administration</span></button>
+  </nav>
+
+  <div class="p-3 border-t border-slate-800 user-info">
+    <div class="panel-soft p-3">
+      <div class="text-xs font-semibold text-slate-200">Utilisateur démo</div>
+      <div class="text-[11px] text-slate-500 mt-1">Responsable maintenance</div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="ml-64 min-h-screen">
+  <div class="mobile-top sticky top-0 z-20 bg-[#0b1220]/95 backdrop-blur border-b border-slate-800 p-3 items-center justify-between">
+    <div class="font-black text-white">VITA</div>
+    <button class="btn btn-secondary" onclick="openNewIntervention()"><i data-lucide="plus"></i> Intervention</button>
+  </div>
+
+  <header class="sticky top-0 z-20 bg-[#0b1220]/92 backdrop-blur border-b border-slate-800">
+    <div class="px-6 py-4 flex flex-wrap gap-3 items-center justify-between">
+      <div>
+        <div id="page-title" class="text-xl font-bold text-white">Dashboard</div>
+        <div id="page-subtitle" class="text-xs text-slate-500 mt-1">Pilotage opérationnel de la maintenance</div>
+      </div>
+      <div class="flex items-center gap-2">
+        <button class="btn btn-secondary" onclick="exportCSV()"><i data-lucide="download"></i> Exporter</button>
+        <button class="btn btn-primary" onclick="openNewIntervention()"><i data-lucide="plus"></i> Nouvelle intervention</button><button class="btn btn-secondary" onclick="openKimpaFromVita(state.view)"><i data-lucide="brain-circuit"></i> KIMPA</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="p-6 space-y-5">
+    <!-- GLOBAL FILTER BAR -->
+    <section class="panel p-4">
+      <div class="flex flex-wrap items-end gap-3">
+        <div class="flex-1 min-w-[220px]">
+          <label class="block text-[11px] text-slate-500 mb-1">Recherche</label>
+          <div class="relative">
+            <i data-lucide="search" class="absolute left-3 top-2.5 w-4 h-4 text-slate-600"></i>
+            <input id="global-search" class="input pl-9" placeholder="Équipement, panne, action, technicien..." oninput="setFilter('search',this.value)">
+          </div>
+        </div>
+        <div class="w-44">
+          <label class="block text-[11px] text-slate-500 mb-1">Équipement</label>
+          <select id="global-equipment" class="input" onchange="setFilter('equipment',this.value)"></select>
+        </div>
+        <div class="w-36">
+          <label class="block text-[11px] text-slate-500 mb-1">Type</label>
+          <select id="global-type" class="input" onchange="setFilter('type',this.value)">
+            <option value="all">Tous</option><option value="Préventive">Préventive</option><option value="Corrective">Corrective</option><option value="Améliorative">Améliorative</option>
+          </select>
+        </div>
+        <div class="w-36">
+          <label class="block text-[11px] text-slate-500 mb-1">Origine</label>
+          <select id="global-origin" class="input" onchange="setFilter('origin',this.value)">
+            <option value="all">Toutes</option><option value="Interne">Interne</option><option value="Externe">Externe</option>
+          </select>
+        </div>
+        <div class="w-36">
+          <label class="block text-[11px] text-slate-500 mb-1">Statut</label>
+          <select id="global-status" class="input" onchange="setFilter('status',this.value)">
+            <option value="all">Tous</option><option>Demande</option><option>Diagnostic</option><option>Planifiée</option><option>Intervention</option><option>Compte rendu</option><option>Validation</option><option>Clôturée</option>
+          </select>
+        </div>
+        <button class="btn btn-secondary" onclick="toggleDates()"><i data-lucide="calendar-range"></i> Période</button>
+        <button class="btn btn-ghost" onclick="resetFilters()"><i data-lucide="rotate-ccw"></i> Réinitialiser</button>
+      </div>
+
+      <div id="date-panel" class="hidden mt-4 pt-4 border-t border-slate-800">
+        <div class="flex flex-wrap gap-2 mb-3">
+          <button class="btn btn-secondary" onclick="preset('today')">Aujourd'hui</button>
+          <button class="btn btn-secondary" onclick="preset('7d')">7 jours</button>
+          <button class="btn btn-secondary" onclick="preset('30d')">30 jours</button>
+          <button class="btn btn-secondary" onclick="preset('month')">Mois en cours</button>
+          <button class="btn btn-secondary" onclick="preset('prevmonth')">Mois précédent</button>
+          <button class="btn btn-secondary" onclick="preset('year')">Année en cours</button>
+          <button class="btn btn-secondary" onclick="preset('prevyear')">Année précédente</button>
+          <button class="btn btn-secondary" onclick="clearDates()">Toutes les dates</button>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+          <div><label class="block text-[11px] text-slate-500 mb-1">Du</label><input id="date-from" type="date" class="input"></div>
+          <div><label class="block text-[11px] text-slate-500 mb-1">Au</label><input id="date-to" type="date" class="input"></div>
+          <div class="flex items-end"><button class="btn btn-primary w-full" onclick="applyDates()"><i data-lucide="check"></i> Appliquer la période</button></div>
+        </div>
+      </div>
+
+      <div id="period-banner" class="mt-3 text-xs text-slate-500"></div>
+    </section>
+
+    <div id="app"></div>
+  </div>
+</main>
+
+<!-- MODAL -->
+<div id="modal-backdrop" class="modal-backdrop" onclick="closeModalOnBackdrop(event)">
+  <div id="modal" class="modal"></div>
+</div>
+
+<script>
+const KEY = {
+  equipment:'vita_equipment_v1',
+  interventions:'vita_interventions_v1',
+  preventive:'vita_preventive_v1',
+  providers:'vita_providers_v1',
+  documents:'vita_documents_v1',
+  users:'vita_users_v1',
+  notifications:'vita_notifications_v1'
+};
+
+const demoEquipment = [
+  {id:'C9',designation:'Poussoir Handtmann',brand:'Handtmann',model:'VF 628',serial:'HT-C9-001',site:'K3',workshop:'Produits élaborés',line:'C9',family:'Poussoir',criticality:'Haute',status:'En service',location:'Ligne C9',subassemblies:['Trémie','Convoyeur','Tête de poussage'],components:['Capteur position','Moteur','Roulements'],commissioning:'2022-04-12'},
+  {id:'C8',designation:'Poussoir Handtmann',brand:'Handtmann',model:'VF 608',serial:'HT-C8-014',site:'K3',workshop:'Produits élaborés',line:'C8',family:'Poussoir',criticality:'Haute',status:'En service',location:'Ligne C8',subassemblies:['Trémie','Convoyeur'],components:['Capteur','Moteur'],commissioning:'2021-09-18'},
+  {id:'MOD-01',designation:'Modular convoyeur',brand:'Marel',model:'Modular',serial:'MR-001',site:'K3',workshop:'Produits élaborés',line:'C9',family:'Convoyeur',criticality:'Moyenne',status:'En service',location:'Ligne C9',subassemblies:['Bande','Motorisation'],components:['Chaîne','Pignon','Moteur'],commissioning:'2020-03-20'},
+  {id:'MOD-02',designation:'Modular convoyeur',brand:'Marel',model:'Modular',serial:'MR-002',site:'K3',workshop:'Produits élaborés',line:'C8',family:'Convoyeur',criticality:'Moyenne',status:'En service',location:'Ligne C8',subassemblies:['Bande','Motorisation'],components:['Chaîne','Pignon','Moteur'],commissioning:'2020-07-11'},
+  {id:'SEAL-01',designation:'Operculeuse Sealpack',brand:'Sealpack',model:'A7',serial:'SP-044',site:'K3',workshop:'Produits élaborés',line:'C8',family:'Conditionnement',criticality:'Critique',status:'En service',location:'Ligne C8',subassemblies:['Convoyage','Operculage'],components:['Vérin','Capteur','Résistance'],commissioning:'2019-11-05'},
+  {id:'MODI-01',designation:'Operculeuse Modini',brand:'Modini',model:'M500',serial:'MD-121',site:'K3',workshop:'Produits élaborés',line:'C9',family:'Conditionnement',criticality:'Haute',status:'En service',location:'Ligne C9',subassemblies:['Convoyage','Operculage'],components:['Vérin','Capteur'],commissioning:'2018-05-17'},
+  {id:'PACK-01',designation:'Convoyeur alimentation',brand:'Marel',model:'FeedLine',serial:'FL-221',site:'K3',workshop:'Produits élaborés',line:'C9',family:'Convoyeur',criticality:'Moyenne',status:'En service',location:'Ligne C9',subassemblies:['Bande'],components:['Roulement','Chaîne'],commissioning:'2023-01-12'},
+  {id:'CUT-01',designation:'Coupeuse',brand:'Marel',model:'Cutter 300',serial:'CT-009',site:'K3',workshop:'Produits élaborés',line:'C8',family:'Coupe',criticality:'Haute',status:'En service',location:'Ligne C8',subassemblies:['Tête de coupe'],components:['Lame','Moteur'],commissioning:'2021-02-15'}
+];
+
+const demoInterventions = [
+  {id:'INT-001',date:'2026-05-20',time:'08:15',equipmentId:'C9',technician:'Alex',type:'Corrective',origin:'Interne',symptom:'Bruit convoyeur',failure:'Roulement',cause:'Usure mécanique',action:'Remplacement des roulements',parts:'Roulements x2',duration:2.5,downtime:1.8,cost:180,status:'Clôturée',providerId:'',comments:'Test fonctionnel concluant.'},
+  {id:'INT-002',date:'2026-06-03',time:'10:20',equipmentId:'C8',technician:'Alex',type:'Corrective',origin:'Interne',symptom:'Arrêt convoyeur',failure:'Chaîne',cause:'Allongement chaîne',action:'Remplacement chaîne',parts:'Chaîne + pignon',duration:3,downtime:2.2,cost:420,status:'Clôturée',providerId:'',comments:'Alignement contrôlé.'},
+  {id:'INT-003',date:'2026-06-18',time:'14:10',equipmentId:'SEAL-01',technician:'Samir',type:'Corrective',origin:'Externe',symptom:'Défaut température',failure:'Résistance',cause:'Dégradation résistance',action:'Remplacement résistance',parts:'Résistance chauffante',duration:4,downtime:3.1,cost:950,status:'Clôturée',providerId:'Marel',comments:'Intervention prestataire.'},
+  {id:'INT-004',date:'2026-07-04',time:'07:50',equipmentId:'C9',technician:'Alex',type:'Préventive',origin:'Interne',symptom:'Contrôle périodique',failure:'-',cause:'-',action:'Contrôle et graissage convoyeur',parts:'Graisse',duration:1.2,downtime:0.3,cost:35,status:'Clôturée',providerId:'',comments:''},
+  {id:'INT-005',date:'2026-07-19',time:'11:30',equipmentId:'MOD-01',technician:'Samir',type:'Corrective',origin:'Interne',symptom:'Bande déportée',failure:'Déport bande',cause:'Mauvais alignement',action:'Réalignement bande',parts:'-',duration:1.5,downtime:0.8,cost:60,status:'Clôturée',providerId:'',comments:''},
+  {id:'INT-006',date:'2026-08-08',time:'09:00',equipmentId:'C9',technician:'Alex',type:'Corrective',origin:'Interne',symptom:'Position plateau incorrecte',failure:'Positionnement',cause:'Réglage mécanique',action:'Réglage position plateau',parts:'-',duration:1.8,downtime:1.1,cost:90,status:'Clôturée',providerId:'',comments:''},
+  {id:'INT-007',date:'2026-08-23',time:'16:40',equipmentId:'SEAL-01',technician:'Samir',type:'Corrective',origin:'Externe',symptom:'Défaut température',failure:'Résistance',cause:'Usure prématurée',action:'Diagnostic + remplacement résistance',parts:'Résistance chauffante',duration:4.5,downtime:3.7,cost:1100,status:'Clôturée',providerId:'Marel',comments:'Défaillance répétitive.'},
+  {id:'INT-008',date:'2026-09-02',time:'08:30',equipmentId:'C8',technician:'Alex',type:'Préventive',origin:'Interne',symptom:'Inspection périodique',failure:'-',cause:'-',action:'Inspection sécurité et convoyeur',parts:'-',duration:1,downtime:0.2,cost:20,status:'Clôturée',providerId:'',comments:''},
+  {id:'INT-009',date:'2026-09-05',time:'13:10',equipmentId:'MOD-02',technician:'Alex',type:'Corrective',origin:'Interne',symptom:'Bruit chaîne',failure:'Chaîne',cause:'Usure',action:'Tension et remplacement maillon',parts:'Maillon chaîne',duration:2.2,downtime:1.5,cost:125,status:'Clôturée',providerId:'',comments:''},
+  {id:'INT-010',date:'2026-09-08',time:'09:45',equipmentId:'C9',technician:'Alex',type:'Corrective',origin:'Interne',symptom:'Défaut moteur',failure:'Moteur',cause:'Échauffement',action:'Contrôle moteur et ventilation',parts:'-',duration:2,downtime:1.4,cost:75,status:'Validation',providerId:'',comments:'Compte rendu en attente de validation.'},
+  {id:'INT-011',date:'2026-09-10',time:'15:00',equipmentId:'MODI-01',technician:'Samir',type:'Corrective',origin:'Externe',symptom:'Vérin lent',failure:'Vérin',cause:'Fuite',action:'Remplacement joint vérin',parts:'Kit joints',duration:3.2,downtime:2.5,cost:640,status:'Clôturée',providerId:'Schneider',comments:''},
+  {id:'INT-012',date:'2026-09-12',time:'10:10',equipmentId:'PACK-01',technician:'Alex',type:'Améliorative',origin:'Interne',symptom:'Usure prématurée',failure:'Roulement',cause:'Exposition',action:'Modification protection + roulement',parts:'Roulement + carter',duration:3.8,downtime:2,cost:260,status:'Clôturée',providerId:'',comments:''},
+  {id:'INT-013',date:'2026-09-15',time:'08:20',equipmentId:'C8',technician:'Alex',type:'Corrective',origin:'Interne',symptom:'Capteur intermittent',failure:'Capteur',cause:'Encrassement',action:'Nettoyage et repositionnement',parts:'-',duration:1.1,downtime:0.7,cost:30,status:'Clôturée',providerId:'',comments:''},
+  {id:'INT-014',date:'2026-09-18',time:'12:00',equipmentId:'SEAL-01',technician:'Samir',type:'Corrective',origin:'Externe',symptom:'Défaut température',failure:'Résistance',cause:'Défaillance',action:'Diagnostic prestataire',parts:'-',duration:2.5,downtime:2.2,cost:300,status:'Compte rendu',providerId:'Marel',comments:'Rapport prestataire attendu.'},
+  {id:'INT-015',date:'2026-09-20',time:'09:15',equipmentId:'CUT-01',technician:'Alex',type:'Préventive',origin:'Interne',symptom:'Inspection périodique',failure:'-',cause:'-',action:'Contrôle lame et motorisation',parts:'-',duration:1.4,downtime:0.3,cost:25,status:'Clôturée',providerId:'',comments:''},
+  {id:'INT-016',date:'2026-09-21',time:'14:00',equipmentId:'C9',technician:'Alex',type:'Corrective',origin:'Interne',symptom:'Bruit convoyeur',failure:'Roulement',cause:'Usure',action:'Diagnostic complémentaire',parts:'-',duration:1.3,downtime:0.9,cost:40,status:'Intervention',providerId:'',comments:'À surveiller.'}
+];
+
+const demoPreventive = [
+  {id:'PREV-001',equipmentId:'C9',operation:'Graissage convoyeur',frequency:30,unit:'jours',estimatedTime:1,manager:'Alex',plannedDate:'2026-09-25',completedDate:'',nextDue:'2026-10-25',status:'À venir'},
+  {id:'PREV-002',equipmentId:'C8',operation:'Contrôle sécurité',frequency:30,unit:'jours',estimatedTime:1.2,manager:'Alex',plannedDate:'2026-09-20',completedDate:'',nextDue:'2026-10-20',status:'En retard'},
+  {id:'PREV-003',equipmentId:'SEAL-01',operation:'Inspection système thermique',frequency:60,unit:'jours',estimatedTime:2,manager:'Samir',plannedDate:'2026-09-27',completedDate:'',nextDue:'2026-11-26',status:'À venir'},
+  {id:'PREV-004',equipmentId:'MOD-01',operation:'Inspection bande et pignons',frequency:30,unit:'jours',estimatedTime:1,manager:'Alex',plannedDate:'2026-09-12',completedDate:'2026-09-12',nextDue:'2026-10-12',status:'Réalisée'},
+  {id:'PREV-005',equipmentId:'CUT-01',operation:'Contrôle lame',frequency:90,unit:'jours',estimatedTime:1.5,manager:'Alex',plannedDate:'2026-09-20',completedDate:'2026-09-20',nextDue:'2026-12-19',status:'Réalisée'},
+  {id:'PREV-006',equipmentId:'MODI-01',operation:'Contrôle vérins',frequency:60,unit:'jours',estimatedTime:1.5,manager:'Samir',plannedDate:'2026-09-29',completedDate:'',nextDue:'2026-11-28',status:'À venir'},
+  {id:'PREV-007',equipmentId:'PACK-01',operation:'Inspection roulements',frequency:30,unit:'jours',estimatedTime:1,manager:'Alex',plannedDate:'2026-09-17',completedDate:'',nextDue:'2026-10-17',status:'En retard'}
+];
+
+const demoProviders = [
+  {id:'Marel',name:'Marel',domain:'Équipements industriels / convoyage',contact:'support@marel.example',phone:'+33 2 00 00 00 00',sla:48,notes:'Intervient régulièrement sur C8/C9.'},
+  {id:'Schneider',name:'Schneider Electric',domain:'Automatisme / électrotechnique',contact:'service@schneider.example',phone:'+33 1 00 00 00 00',sla:48,notes:'Interventions électriques et automatismes.'},
+  {id:'Handtmann',name:'Handtmann',domain:'Poussoirs',contact:'service@handtmann.example',phone:'+33 3 00 00 00 00',sla:72,notes:'Support constructeur.'}
+];
+
+const demoDocuments = [
+  {id:'DOC-001',name:'Manuel constructeur VF 628',type:'Manuel constructeur',equipmentId:'C9',version:'3.2',date:'2026-06-14',author:'Maintenance'},
+  {id:'DOC-002',name:'Schéma électrique C9',type:'Schéma',equipmentId:'C9',version:'2.1',date:'2026-05-30',author:'Méthodes'},
+  {id:'DOC-003',name:'Gamme graissage convoyeur',type:'Gamme',equipmentId:'MOD-01',version:'1.4',date:'2026-07-01',author:'Méthodes'},
+  {id:'DOC-004',name:'Procédure contrôle sécurité',type:'Procédure',equipmentId:'C8',version:'1.0',date:'2026-08-20',author:'Maintenance'},
+  {id:'DOC-005',name:'Plan maintenance Sealpack',type:'Plan',equipmentId:'SEAL-01',version:'2.0',date:'2026-07-19',author:'Méthodes'},
+  {id:'DOC-006',name:'Photo convoyeur C9',type:'Photo',equipmentId:'C9',version:'1.0',date:'2026-08-08',author:'Alex'}
+];
+
+const demoUsers = [
+  {id:'USR-01',name:'Alex',role:'Méthodes',email:'alex@vita.local',status:'Actif'},
+  {id:'USR-02',name:'Samir',role:'Technicien',email:'samir@vita.local',status:'Actif'},
+  {id:'USR-03',name:'Responsable maintenance',role:'Responsable maintenance',email:'manager@vita.local',status:'Actif'},
+  {id:'USR-04',name:'Administrateur',role:'Administrateur',email:'admin@vita.local',status:'Actif'}
+];
+
+let equipment = load(KEY.equipment, demoEquipment);
+let interventions = load(KEY.interventions, demoInterventions);
+let preventive = load(KEY.preventive, demoPreventive);
+let providers = load(KEY.providers, demoProviders);
+let documents = load(KEY.documents, demoDocuments);
+let users = load(KEY.users, demoUsers);
+let notifications = load(KEY.notifications, []);
+
+let state = {
+  view:'dashboard',
+  selectedEquipment:null,
+  selectedProvider:null,
+  filters:{search:'',equipment:'all',type:'all',origin:'all',status:'all',dateFrom:'',dateTo:''}
+};
+
+function load(key,fallback){
+  try {
+    const raw=localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : structuredClone(fallback);
+  } catch(e){ return structuredClone(fallback); }
+}
+function save(){
+  localStorage.setItem(KEY.equipment,JSON.stringify(equipment));
+  localStorage.setItem(KEY.interventions,JSON.stringify(interventions));
+  localStorage.setItem(KEY.preventive,JSON.stringify(preventive));
+  localStorage.setItem(KEY.providers,JSON.stringify(providers));
+  localStorage.setItem(KEY.documents,JSON.stringify(documents));
+  localStorage.setItem(KEY.users,JSON.stringify(users));
+  localStorage.setItem(KEY.notifications,JSON.stringify(notifications));
+}
+function esc(v=''){
+  return String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
+}
+function fmtDate(d){
+  if(!d) return '—';
+  const [y,m,day]=String(d).split('-');
+  return day && m && y ? `${day}/${m}/${y}` : d;
+}
+function isoDate(d=new Date()){
+  const x=new Date(d); x.setMinutes(x.getMinutes()-x.getTimezoneOffset());
+  return x.toISOString().slice(0,10);
+}
+function daysAgo(n){ const d=new Date(); d.setDate(d.getDate()-n); return isoDate(d); }
+function fmtHours(n){ return `${Number(n||0).toFixed(1).replace('.',',')} h`; }
+function money(n){ return `${Number(n||0).toLocaleString('fr-FR')} €`; }
+function equipmentName(id){ const e=equipment.find(x=>x.id===id); return e ? `${e.id} — ${e.designation}` : id; }
+function providerName(id){ const p=providers.find(x=>x.id===id); return p ? p.name : (id||'—'); }
+function badge(text){
+  const cls = /Clôturée|Réalisée|En service|Actif|OK/.test(text) ? 'badge-green' :
+              /retard|rouge|Critique|Haute/.test(text) ? 'badge-red' :
+              /À venir|Planifiée|En cours|Validation|Compte rendu|Moyenne/.test(text) ? 'badge-orange' :
+              /Intervention|Diagnostic|Demande/.test(text) ? 'badge-blue' : 'badge-gray';
+  return `<span class="badge ${cls}">${esc(text)}</span>`;
+}
+function getEquipment(id){return equipment.find(e=>e.id===id);}
+function filteredInterventions(){
+  const f=state.filters;
+  return interventions.filter(i=>{
+    if(f.equipment!=='all' && i.equipmentId!==f.equipment) return false;
+    if(f.type!=='all' && i.type!==f.type) return false;
+    if(f.origin!=='all' && i.origin!==f.origin) return false;
+    if(f.status!=='all' && i.status!==f.status) return false;
+    if(f.dateFrom && i.date < f.dateFrom) return false;
+    if(f.dateTo && i.date > f.dateTo) return false;
+    if(f.search){
+      const q=f.search.toLowerCase();
+      const text=[i.id,i.equipmentId,equipmentName(i.equipmentId),i.technician,i.type,i.origin,i.symptom,i.failure,i.cause,i.action,i.parts,i.comments,providerName(i.providerId)].join(' ').toLowerCase();
+      if(!text.includes(q)) return false;
+    }
+    return true;
+  }).sort((a,b)=>b.date.localeCompare(a.date));
+}
+function periodLabel(){
+  const f=state.filters;
+  if(!f.dateFrom&&!f.dateTo) return 'Toutes les dates';
+  return `Période analysée : ${fmtDate(f.dateFrom||'—')} → ${fmtDate(f.dateTo||'—')}`;
+}
+function setFilter(k,v){
+  state.filters[k]=v;
+  render();
+}
+function resetFilters(){
+  state.filters={search:'',equipment:'all',type:'all',origin:'all',status:'all',dateFrom:'',dateTo:''};
+  render();
+}
+function toggleDates(){ document.getElementById('date-panel').classList.toggle('hidden'); }
+function applyDates(){
+  state.filters.dateFrom=document.getElementById('date-from').value;
+  state.filters.dateTo=document.getElementById('date-to').value;
+  if(state.filters.dateFrom && state.filters.dateTo && state.filters.dateFrom>state.filters.dateTo){
+    showToast('La date de début doit précéder la date de fin.'); return;
+  }
+  render();
+  showToast('Période appliquée.');
+}
+function clearDates(){state.filters.dateFrom='';state.filters.dateTo='';render();}
+function preset(p){
+  const now=new Date(), today=isoDate(now);
+  let from=today,to=today;
+  if(p==='7d'){from=daysAgo(6);to=today;}
+  if(p==='30d'){from=daysAgo(29);to=today;}
+  if(p==='month'){from=isoDate(new Date(now.getFullYear(),now.getMonth(),1));to=today;}
+  if(p==='prevmonth'){from=isoDate(new Date(now.getFullYear(),now.getMonth()-1,1));to=isoDate(new Date(now.getFullYear(),now.getMonth(),0));}
+  if(p==='year'){from=isoDate(new Date(now.getFullYear(),0,1));to=today;}
+  if(p==='prevyear'){from=isoDate(new Date(now.getFullYear()-1,0,1));to=isoDate(new Date(now.getFullYear()-1,11,31));}
+  state.filters.dateFrom=from; state.filters.dateTo=to; render(); showToast('Période : '+periodLabel().replace('Période analysée : ',''));
+}
+function setView(v){
+  state.view=v; state.selectedEquipment=null; state.selectedProvider=null;
+  window.scrollTo({top:0,behavior:'smooth'}); render();
+}
+function selectEquipment(id){state.selectedEquipment=id;state.view='equipment-detail';render();}
+function selectProvider(id){state.selectedProvider=id;state.view='provider-detail';render();}
+
+function render(){
+  renderFilterControls();
+  renderNav();
+  const meta={
+    dashboard:['Dashboard','Pilotage opérationnel de la maintenance'],
+    equipment:['Parc équipements','Structure et état du parc industriel'],
+    'equipment-detail':['Fiche équipement','Historique, préventif et documentation'],
+    interventions:['Interventions','Cycle de vie et comptes rendus de maintenance'],
+    preventive:['Maintenance préventive','Planification, échéances et réalisation'],
+    providers:['Prestataires','Suivi des intervenants extérieurs'],
+    'provider-detail':['Fiche prestataire','Historique et performance d’intervention'],
+    documents:['Documentation','Documents techniques associés au parc'],
+    history:['Historique & Recherche','Recherche avancée et exploitation de l’historique'],
+    kimpa:['KIMPA','Moteur d’analyse industrielle & PHM connecté à VITA'],
+    notifications:['Notifications','Événements nécessitant une action'],
+    admin:['Administration','Utilisateurs, rôles et configuration']
+  };
+  document.getElementById('page-title').textContent=meta[state.view][0];
+  document.getElementById('page-subtitle').textContent=meta[state.view][1];
+  const target=document.getElementById('app');
+  const views={
+    dashboard:renderDashboard,
+    equipment:renderEquipment,
+    'equipment-detail':renderEquipmentDetail,
+    interventions:renderInterventions,
+    preventive:renderPreventive,
+    providers:renderProviders,
+    'provider-detail':renderProviderDetail,
+    documents:renderDocuments,
+    history:renderHistory,
+    kimpa:renderKimpa,
+    notifications:renderNotifications,
+    admin:renderAdmin
+  };
+  target.innerHTML=views[state.view]();
+  updatePeriodBanner();
+  lucide.createIcons();
+}
+function renderNav(){
+  document.querySelectorAll('.nav-item').forEach(b=>b.classList.toggle('active',b.dataset.view===state.view || (state.view==='equipment-detail'&&b.dataset.view==='equipment') || (state.view==='provider-detail'&&b.dataset.view==='providers')));
+  document.getElementById('notification-count').textContent=notifications.filter(n=>!n.read).length;
+}
+function renderFilterControls(){
+  const eq=document.getElementById('global-equipment');
+  if(eq){
+    eq.innerHTML='<option value="all">Tous</option>'+equipment.map(e=>`<option value="${esc(e.id)}">${esc(e.id)} — ${esc(e.designation)}</option>`).join('');
+    eq.value=state.filters.equipment;
+    document.getElementById('global-search').value=state.filters.search;
+    document.getElementById('global-type').value=state.filters.type;
+    document.getElementById('global-origin').value=state.filters.origin;
+    document.getElementById('global-status').value=state.filters.status;
+    const df=document.getElementById('date-from'), dt=document.getElementById('date-to');
+    if(df) df.value=state.filters.dateFrom;
+    if(dt) dt.value=state.filters.dateTo;
+  }
+}
+function updatePeriodBanner(){
+  const el=document.getElementById('period-banner');
+  if(!el)return;
+  const count=filteredInterventions().length;
+  const extra=state.filters.search||state.filters.equipment!=='all'||state.filters.type!=='all'||state.filters.origin!=='all'||state.filters.status!=='all'
+    ? ` • ${count} intervention(s) correspondent aux filtres`
+    : '';
+  el.textContent=periodLabel()+extra;
+}
+
+function kpi(title,value,sub,icon){
+  return `<div class="panel kpi p-4">
+    <div class="flex justify-between items-start">
+      <div><div class="text-xs text-slate-500">${title}</div><div class="text-2xl font-black text-white mt-2">${value}</div><div class="text-[11px] text-slate-500 mt-1">${sub}</div></div>
+      <div class="w-9 h-9 rounded-lg bg-blue-950/70 flex items-center justify-center text-blue-400"><i data-lucide="${icon}" class="w-4 h-4"></i></div>
+    </div>
+  </div>`;
+}
+function metrics(list){
+  const failures=list.filter(i=>i.type==='Corrective'&&i.failure&&i.failure!=='-');
+  const downtime=list.reduce((s,i)=>s+Number(i.downtime||0),0);
+  const repair=list.reduce((s,i)=>s+Number(i.duration||0),0);
+  const mttr=failures.length?repair/failures.length:0;
+  const cost=list.reduce((s,i)=>s+Number(i.cost||0),0);
+  const preventiveCount=list.filter(i=>i.type==='Préventive').length;
+  const correctiveCount=list.filter(i=>i.type==='Corrective').length;
+  const uniqueEq=new Set(list.map(i=>i.equipmentId)).size;
+  let mtbf=0;
+  if(failures.length>1){
+    const by={};
+    failures.forEach(i=>(by[i.equipmentId]??=[]).push(i.date));
+    const intervals=[];
+    Object.values(by).forEach(ds=>{
+      ds.sort();
+      for(let j=1;j<ds.length;j++) intervals.push((new Date(ds[j])-new Date(ds[j-1]))/36e5);
+    });
+    if(intervals.length) mtbf=intervals.reduce((a,b)=>a+b,0)/intervals.length;
+  }
+  return {failures,downtime,repair,mttr,cost,preventiveCount,correctiveCount,uniqueEq,mtbf};
+}
+function renderDashboard(){
+  const list=filteredInterventions(), m=metrics(list);
+  const preventiveRate=preventive.length?Math.round(preventive.filter(p=>p.status==='Réalisée').length/preventive.length*100):0;
+  const late=preventive.filter(p=>p.status==='En retard').length;
+  const upcoming=preventive.filter(p=>p.status==='À venir').length;
+  const validation=list.filter(i=>i.status==='Validation'||i.status==='Compte rendu').length;
+  const inProgress=list.filter(i=>['Intervention','Diagnostic','Planifiée'].includes(i.status)).length;
+  const top=topEquipment(list);
+  const failureGroups=groupByFailure(m.failures);
+  return `
+  <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+    ${kpi('Équipements',equipment.length,`${m.uniqueEq} concernés par la période`,'boxes')}
+    ${kpi('Interventions',list.length,'Selon les filtres actifs','wrench')}
+    ${kpi('Pannes',m.failures.length,`${m.correctiveCount} corrective(s)`,'triangle-alert')}
+    ${kpi('Temps d’arrêt',fmtHours(m.downtime),'Cumul période','clock-3')}
+    ${kpi('MTTR',fmtHours(m.mttr),'Indicateur de maintenabilité','timer')}
+    ${kpi('MTBF',m.mtbf?fmtHours(m.mtbf):'—',m.mtbf?'Intervalles de défaillance':'Données insuffisantes','activity')}
+    ${kpi('Préventif réalisé',`${preventiveRate}%`,`${late} en retard • ${upcoming} à venir`,'calendar-check')}
+    ${kpi('À traiter',validation+inProgress,`${validation} validation(s) • ${inProgress} en cours`,'bell-ring')}
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+    <section class="panel p-5 xl:col-span-2">
+      <div class="flex justify-between items-center mb-4"><div><h2 class="font-bold text-white">Équipements les plus sollicités</h2><p class="text-xs text-slate-500 mt-1">Interventions sur la période active</p></div><button class="btn btn-ghost" onclick="setView('equipment')">Voir le parc →</button></div>
+      ${top.length?top.slice(0,6).map(x=>`<div class="mb-4"><div class="flex justify-between text-xs mb-1"><span class="text-slate-300">${esc(x.id)} — ${esc(x.name)}</span><span class="text-slate-500">${x.count} int.</span></div><div class="bar-bg"><div class="bar" style="width:${Math.min(100,x.count/(top[0].count||1)*100)}%"></div></div></div>`).join(''):'<div class="empty">Aucune intervention pour les filtres actifs.</div>'}
+    </section>
+
+    <section class="panel p-5">
+      <div class="flex justify-between items-center mb-4"><div><h2 class="font-bold text-white">À traiter</h2><p class="text-xs text-slate-500 mt-1">Priorités opérationnelles</p></div></div>
+      <div class="space-y-3">
+        <div class="panel-soft p-3 flex justify-between"><span class="text-sm">Préventifs en retard</span>${badge(String(late))}</div>
+        <div class="panel-soft p-3 flex justify-between"><span class="text-sm">Interventions à valider</span>${badge(String(validation))}</div>
+        <div class="panel-soft p-3 flex justify-between"><span class="text-sm">Interventions en cours</span>${badge(String(inProgress))}</div>
+        <div class="panel-soft p-3 flex justify-between"><span class="text-sm">Préventifs à venir</span>${badge(String(upcoming))}</div>
+      </div>
+    </section>
+  </div>
+
+  <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+    <section class="panel p-5">
+      <div class="mb-4"><h2 class="font-bold text-white">Répartition des défaillances</h2><p class="text-xs text-slate-500 mt-1">Vue opérationnelle — l'analyse avancée est prévue en V2</p></div>
+      ${failureGroups.length?failureGroups.slice(0,7).map(x=>`<div class="mb-4"><div class="flex justify-between text-xs mb-1"><span>${esc(x.name)}</span><span>${x.count}</span></div><div class="bar-bg"><div class="bar" style="width:${Math.min(100,x.count/failureGroups[0].count*100)}%"></div></div></div>`).join(''):'<div class="empty">Pas de défaillance sur la période.</div>'}
+    </section>
+
+    <section class="panel p-5">
+      <div class="flex justify-between items-center mb-4"><div><h2 class="font-bold text-white">Dernières interventions</h2><p class="text-xs text-slate-500 mt-1">${list.length} résultat(s)</p></div><button class="btn btn-ghost" onclick="setView('interventions')">Tout voir →</button></div>
+      <div class="space-y-2">${list.slice(0,6).map(i=>`
+        <div class="panel-soft p-3 flex items-center justify-between gap-3">
+          <div><div class="text-sm font-semibold text-slate-200">${esc(i.equipmentId)} — ${esc(i.symptom)}</div><div class="text-[11px] text-slate-500 mt-1">${fmtDate(i.date)} • ${esc(i.technician)} • ${esc(i.type)}</div></div>
+          ${badge(i.status)}
+        </div>`).join('') || '<div class="empty">Aucune donnée.</div>'}</div>
+    </section>
+  </div>`;
+}
+function topEquipment(list){
+  const map={};
+  list.forEach(i=>{map[i.equipmentId]=(map[i.equipmentId]||0)+1;});
+  return Object.entries(map).map(([id,count])=>({id,name:getEquipment(id)?.designation||id,count})).sort((a,b)=>b.count-a.count);
+}
+function groupByFailure(list){
+  const map={};
+  list.forEach(i=>{map[i.failure]=(map[i.failure]||0)+1;});
+  return Object.entries(map).filter(([n])=>n&&n!=='-').map(([name,count])=>({name,count})).sort((a,b)=>b.count-a.count);
+}
+
+function renderEquipment(){
+  const q=state.filters.search.toLowerCase();
+  const rows=equipment.filter(e=>{
+    if(state.filters.equipment!=='all'&&e.id!==state.filters.equipment)return false;
+    const text=[e.id,e.designation,e.brand,e.model,e.line,e.workshop,e.family,e.criticality,e.status].join(' ').toLowerCase();
+    return !q||text.includes(q);
+  });
+  return `<section class="panel p-5">
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-5">
+      <div><h2 class="font-bold text-white">Parc équipements</h2><p class="text-xs text-slate-500 mt-1">${rows.length} équipement(s)</p></div>
+      <button class="btn btn-primary" onclick="openNewEquipment()"><i data-lucide="plus"></i> Nouvel équipement</button>
+    </div>
+    <div class="table-wrap"><table><thead><tr><th>ID</th><th>Désignation</th><th>Localisation</th><th>Famille</th><th>État</th><th>Criticité</th><th>Actions</th></tr></thead><tbody>
+      ${rows.map(e=>`<tr>
+        <td><span class="font-bold text-blue-300">${esc(e.id)}</span></td>
+        <td><div class="font-semibold text-slate-200">${esc(e.designation)}</div><div class="text-[11px] text-slate-500">${esc(e.brand)} • ${esc(e.model)}</div></td>
+        <td>${esc(e.line)}<div class="text-[11px] text-slate-500">${esc(e.workshop)}</div></td>
+        <td>${esc(e.family)}</td>
+        <td>${badge(e.status)}</td>
+        <td>${badge(e.criticality)}</td>
+        <td><button class="btn btn-secondary" onclick="selectEquipment('${esc(e.id)}')"><i data-lucide="eye"></i> Ouvrir</button></td>
+      </tr>`).join('')||`<tr><td colspan="7"><div class="empty">Aucun équipement trouvé.</div></td></tr>`}
+    </tbody></table></div>
+  </section>`;
+}
+
+function renderEquipmentDetail(){
+  const e=getEquipment(state.selectedEquipment);
+  if(!e)return renderEquipment();
+  const list=filteredInterventions().filter(i=>i.equipmentId===e.id);
+  const prev=preventive.filter(p=>p.equipmentId===e.id);
+  const docs=documents.filter(d=>d.equipmentId===e.id);
+  const m=metrics(list);
+  return `<div class="space-y-5">
+    <div class="flex items-center gap-2"><button class="btn btn-ghost" onclick="setView('equipment')"><i data-lucide="arrow-left"></i> Parc</button><span class="text-slate-700">/</span><span class="text-sm text-slate-400">${esc(e.id)}</span></div>
+    <section class="panel p-5">
+      <div class="flex flex-wrap justify-between gap-4">
+        <div><div class="flex items-center gap-2"><h2 class="text-2xl font-black text-white">${esc(e.designation)}</h2>${badge(e.criticality)}</div><div class="text-sm text-slate-500 mt-2">${esc(e.id)} • ${esc(e.brand)} ${esc(e.model)} • S/N ${esc(e.serial)}</div></div>
+        <button class="btn btn-primary" onclick="openNewIntervention('${esc(e.id)}')"><i data-lucide="plus"></i> Intervention</button>
+      </div>
+      <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">
+        <div class="panel-soft p-3"><div class="text-[11px] text-slate-500">État</div><div class="mt-1">${badge(e.status)}</div></div>
+        <div class="panel-soft p-3"><div class="text-[11px] text-slate-500">Ligne</div><div class="mt-1 font-semibold">${esc(e.line)}</div></div>
+        <div class="panel-soft p-3"><div class="text-[11px] text-slate-500">Interventions</div><div class="mt-1 font-semibold">${list.length}</div></div>
+        <div class="panel-soft p-3"><div class="text-[11px] text-slate-500">Temps d'arrêt</div><div class="mt-1 font-semibold">${fmtHours(m.downtime)}</div></div>
+      </div>
+    </section>
+
+    <div class="grid grid-cols-1 xl:grid-cols-3 gap-5">
+      <section class="panel p-5 xl:col-span-2">
+        <h3 class="font-bold text-white mb-4">Informations équipement</h3>
+        <div class="grid grid-cols-2 md:grid-cols-3 gap-4 text-sm">
+          ${info('Site',e.site)}${info('Atelier',e.workshop)}${info('Localisation',e.location)}${info('Famille',e.family)}${info('Mise en service',fmtDate(e.commissioning))}${info('N° série',e.serial)}
+        </div>
+        <div class="mt-5"><div class="text-xs text-slate-500 mb-2">Sous-ensembles</div><div class="flex flex-wrap gap-2">${e.subassemblies.map(x=>badge(x)).join('')}</div></div>
+        <div class="mt-4"><div class="text-xs text-slate-500 mb-2">Composants</div><div class="flex flex-wrap gap-2">${e.components.map(x=>badge(x)).join('')}</div></div>
+      </section>
+      <section class="panel p-5">
+        <h3 class="font-bold text-white mb-4">Préventif</h3>
+        ${prev.map(p=>`<div class="panel-soft p-3 mb-2"><div class="font-semibold text-sm">${esc(p.operation)}</div><div class="text-[11px] text-slate-500 mt-1">Échéance : ${fmtDate(p.nextDue)}</div><div class="mt-2">${badge(p.status)}</div></div>`).join('')||'<div class="empty">Aucune gamme préventive.</div>'}
+      </section>
+    </div>
+
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+      <section class="panel p-5"><div class="flex justify-between mb-4"><h3 class="font-bold text-white">Historique</h3><span class="text-xs text-slate-500">${list.length} intervention(s)</span></div>
+        <div class="timeline">${list.slice(0,8).map(i=>`<div class="timeline-item"><div class="flex justify-between gap-3"><div><div class="text-sm font-semibold text-slate-200">${esc(i.failure||i.type)}</div><div class="text-xs text-slate-500">${fmtDate(i.date)} • ${esc(i.action)}</div></div>${badge(i.status)}</div></div>`).join('')||'<div class="empty">Aucun historique.</div>'}</div>
+      </section>
+      <section class="panel p-5"><div class="flex justify-between mb-4"><h3 class="font-bold text-white">Documentation</h3><span class="text-xs text-slate-500">${docs.length} document(s)</span></div>
+        ${docs.map(d=>`<div class="panel-soft p-3 mb-2 flex items-center justify-between"><div><div class="text-sm font-semibold">${esc(d.name)}</div><div class="text-[11px] text-slate-500">${esc(d.type)} • v${esc(d.version)} • ${fmtDate(d.date)}</div></div><button class="btn btn-secondary" onclick="showToast('Prototype : document ${esc(d.name)} sélectionné.')"><i data-lucide="file-text"></i></button></div>`).join('')||'<div class="empty">Aucun document.</div>'}
+      </section>
+    </div>
+  </div>`;
+}
+function info(k,v){return `<div><div class="text-[11px] text-slate-500">${k}</div><div class="mt-1 font-semibold text-slate-200">${esc(v||'—')}</div></div>`;}
+
+function renderInterventions(){
+  const list=filteredInterventions();
+  return `<section class="panel p-5">
+    <div class="flex flex-wrap justify-between items-center gap-3 mb-5"><div><h2 class="font-bold text-white">Interventions</h2><p class="text-xs text-slate-500 mt-1">${list.length} résultat(s) avec les filtres actifs</p></div><button class="btn btn-primary" onclick="openNewIntervention()"><i data-lucide="plus"></i> Nouvelle intervention</button></div>
+    <div class="panel-soft p-4 mb-5"><div class="grid grid-cols-2 md:grid-cols-4 gap-3 text-sm">${info('Correctives',list.filter(i=>i.type==='Corrective').length)}${info('Préventives',list.filter(i=>i.type==='Préventive').length)}${info('Externes',list.filter(i=>i.origin==='Externe').length)}${info('Temps d’arrêt',fmtHours(list.reduce((s,i)=>s+Number(i.downtime||0),0)))}</div></div>
+    <div class="table-wrap"><table><thead><tr><th>Date</th><th>Équipement</th><th>Type / origine</th><th>Symptôme / défaillance</th><th>Durée / arrêt</th><th>Statut</th><th></th></tr></thead><tbody>
+      ${list.map(i=>`<tr>
+        <td>${fmtDate(i.date)}<div class="text-[11px] text-slate-500">${esc(i.time||'')}</div></td>
+        <td><button class="text-blue-300 hover:underline font-semibold" onclick="selectEquipment('${esc(i.equipmentId)}')">${esc(i.equipmentId)}</button><div class="text-[11px] text-slate-500">${esc(getEquipment(i.equipmentId)?.designation||'')}</div></td>
+        <td>${badge(i.type)}<div class="mt-1">${badge(i.origin)}</div></td>
+        <td><div class="font-semibold">${esc(i.symptom)}</div><div class="text-[11px] text-slate-500">${esc(i.failure)}</div></td>
+        <td>${fmtHours(i.duration)}<div class="text-[11px] text-slate-500">arrêt ${fmtHours(i.downtime)}</div></td>
+        <td>${badge(i.status)}</td>
+        <td><button class="btn btn-secondary" onclick="viewIntervention('${esc(i.id)}')"><i data-lucide="eye"></i></button></td>
+      </tr>`).join('')||`<tr><td colspan="7"><div class="empty">Aucune intervention ne correspond aux critères.</div></td></tr>`}
+    </tbody></table></div>
+  </section>`;
+}
+
+function viewIntervention(id){
+  const i=interventions.find(x=>x.id===id); if(!i)return;
+  openModal(`<div class="p-5 border-b border-slate-800 flex justify-between"><div><div class="text-xs text-slate-500">${esc(i.id)}</div><h2 class="text-xl font-bold text-white mt-1">${esc(i.symptom)}</h2></div><button class="btn btn-ghost" onclick="closeModal()">✕</button></div>
+  <div class="p-5 space-y-5">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">${info('Date',fmtDate(i.date))}${info('Équipement',equipmentName(i.equipmentId))}${info('Technicien',i.technician)}${info('Prestataire',providerName(i.providerId))}</div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">${info('Type',i.type)}${info('Origine',i.origin)}${info('Durée',fmtHours(i.duration))}${info('Arrêt',fmtHours(i.downtime))}</div>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">${info('Défaillance',i.failure)}${info('Cause',i.cause)}${info('Action',i.action)}${info('Pièces',i.parts)}${info('Coût',money(i.cost))}${info('Statut',i.status)}</div>
+    <div class="panel-soft p-4"><div class="text-xs text-slate-500 mb-1">Commentaires</div><div class="text-sm">${esc(i.comments||'Aucun commentaire')}</div></div>
+  </div>`);
+}
+
+function renderPreventive(){
+  const counts={late:preventive.filter(p=>p.status==='En retard').length,upcoming:preventive.filter(p=>p.status==='À venir').length,done:preventive.filter(p=>p.status==='Réalisée').length,total:preventive.length};
+  const rate=counts.total?Math.round(counts.done/counts.total*100):0;
+  return `<div class="space-y-5">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">${kpi('Total tâches',counts.total,'Plans préventifs','calendar')}${kpi('En retard',counts.late,'À traiter','triangle-alert')}${kpi('À venir',counts.upcoming,'Échéances futures','calendar-clock')}${kpi('Taux réalisé',rate+'%','Sur les tâches enregistrées','calendar-check')}</div>
+    <section class="panel p-5">
+      <div class="flex flex-wrap justify-between gap-3 mb-5"><div><h2 class="font-bold text-white">Planning préventif</h2><p class="text-xs text-slate-500 mt-1">Planification et suivi des opérations récurrentes</p></div><button class="btn btn-primary" onclick="openNewPreventive()"><i data-lucide="plus"></i> Nouvelle tâche</button></div>
+      <div class="table-wrap"><table><thead><tr><th>Équipement</th><th>Opération</th><th>Fréquence</th><th>Responsable</th><th>Prévue</th><th>Prochaine échéance</th><th>Statut</th><th></th></tr></thead><tbody>
+      ${preventive.sort((a,b)=>a.nextDue.localeCompare(b.nextDue)).map(p=>`<tr><td><button class="text-blue-300 font-semibold hover:underline" onclick="selectEquipment('${esc(p.equipmentId)}')">${esc(p.equipmentId)}</button></td><td>${esc(p.operation)}<div class="text-[11px] text-slate-500">${fmtHours(p.estimatedTime)}</div></td><td>${p.frequency} ${esc(p.unit)}</td><td>${esc(p.manager)}</td><td>${fmtDate(p.plannedDate)}</td><td>${fmtDate(p.nextDue)}</td><td>${badge(p.status)}</td><td><button class="btn btn-secondary" onclick="completePreventive('${esc(p.id)}')"><i data-lucide="check"></i></button></td></tr>`).join('')}
+      </tbody></table></div>
+    </section>
+  </div>`;
+}
+function completePreventive(id){
+  const p=preventive.find(x=>x.id===id); if(!p)return;
+  p.completedDate=isoDate(); p.status='Réalisée';
+  const d=new Date(p.completedDate); d.setDate(d.getDate()+Number(p.frequency));
+  p.nextDue=isoDate(d);
+  save(); showToast('Tâche préventive clôturée et prochaine échéance recalculée.'); render();
+}
+
+function renderProviders(){
+  return `<section class="panel p-5">
+    <div class="flex justify-between items-center mb-5"><div><h2 class="font-bold text-white">Prestataires</h2><p class="text-xs text-slate-500 mt-1">${providers.length} prestataire(s)</p></div><button class="btn btn-primary" onclick="openNewProvider()"><i data-lucide="plus"></i> Nouveau prestataire</button></div>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      ${providers.map(p=>{
+        const list=interventions.filter(i=>i.providerId===p.id), response=list.length?list.reduce((s,i)=>s+1,0)/list.length:0, resolution=list.length?list.reduce((s,i)=>s+Number(i.duration||0),0)/list.length:0,cost=list.reduce((s,i)=>s+Number(i.cost||0),0);
+        return `<div class="panel-soft p-4"><div class="flex justify-between"><div><div class="font-bold text-white">${esc(p.name)}</div><div class="text-xs text-slate-500 mt-1">${esc(p.domain)}</div></div>${badge(String(list.length)+' int.')}</div>
+          <div class="grid grid-cols-2 gap-3 mt-4">${info('Temps réponse',response.toFixed(1)+' h')}${info('Résolution moy.',fmtHours(resolution))}${info('Coût cumulé',money(cost))}${info('SLA',p.sla+' h')}</div>
+          <button class="btn btn-secondary w-full mt-4" onclick="selectProvider('${esc(p.id)}')">Ouvrir la fiche</button>
+        </div>`;
+      }).join('')}
+    </div>
+  </section>`;
+}
+function renderProviderDetail(){
+  const p=providers.find(x=>x.id===state.selectedProvider); if(!p)return renderProviders();
+  const list=interventions.filter(i=>i.providerId===p.id).sort((a,b)=>b.date.localeCompare(a.date));
+  return `<div class="space-y-5"><button class="btn btn-ghost" onclick="setView('providers')"><i data-lucide="arrow-left"></i> Prestataires</button>
+  <section class="panel p-5"><div class="flex flex-wrap justify-between gap-3"><div><h2 class="text-2xl font-black text-white">${esc(p.name)}</h2><div class="text-sm text-slate-500 mt-1">${esc(p.domain)}</div></div>${badge('Prestataire actif')}</div>
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mt-5">${info('Interventions',list.length)}${info('SLA',p.sla+' h')}${info('Temps résolution',fmtHours(list.length?list.reduce((s,i)=>s+Number(i.duration||0),0)/list.length:0))}${info('Coût',money(list.reduce((s,i)=>s+Number(i.cost||0),0)))}</div>
+  </section>
+  <section class="panel p-5"><h3 class="font-bold text-white mb-4">Historique des interventions</h3><div class="table-wrap"><table><thead><tr><th>Date</th><th>Équipement</th><th>Défaillance</th><th>Action</th><th>Durée</th><th>Coût</th></tr></thead><tbody>${list.map(i=>`<tr><td>${fmtDate(i.date)}</td><td>${esc(i.equipmentId)}</td><td>${esc(i.failure)}</td><td>${esc(i.action)}</td><td>${fmtHours(i.duration)}</td><td>${money(i.cost)}</td></tr>`).join('')||'<tr><td colspan="6"><div class="empty">Aucune intervention.</div></td></tr>'}</tbody></table></div></section>
+  </div>`;
+}
+
+function renderDocuments(){
+  return `<section class="panel p-5">
+    <div class="flex justify-between items-center mb-5"><div><h2 class="font-bold text-white">Documentation technique</h2><p class="text-xs text-slate-500 mt-1">${documents.length} document(s) rattaché(s) au parc</p></div><button class="btn btn-primary" onclick="openNewDocument()"><i data-lucide="upload"></i> Ajouter un document</button></div>
+    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+      ${documents.map(d=>`<div class="panel-soft p-4"><div class="flex items-start justify-between gap-3"><div class="w-10 h-10 rounded-lg bg-blue-950 flex items-center justify-center text-blue-400"><i data-lucide="${d.type==='Photo'?'image':'file-text'}"></i></div>${badge(d.type)}</div><div class="font-semibold text-slate-200 mt-4">${esc(d.name)}</div><div class="text-xs text-slate-500 mt-1">${equipmentName(d.equipmentId)}</div><div class="text-[11px] text-slate-600 mt-2">Version ${esc(d.version)} • ${fmtDate(d.date)} • ${esc(d.author)}</div><button class="btn btn-secondary w-full mt-4" onclick="showToast('Prototype : ouverture du document simulée.')">Consulter</button></div>`).join('')}
+    </div>
+  </section>`;
+}
+
+function renderHistory(){
+  const list=filteredInterventions(), m=metrics(list), groups=groupByFailure(m.failures);
+  const recurring=groups.filter(g=>g.count>=2);
+  return `<div class="space-y-5">
+    <section class="panel p-5"><div class="flex flex-wrap justify-between gap-3"><div><h2 class="font-bold text-white">Recherche avancée</h2><p class="text-xs text-slate-500 mt-1">Les filtres globaux au-dessus de l'écran sont combinables.</p></div><span class="badge badge-blue">${list.length} résultat(s)</span></div>
+    <div class="grid grid-cols-2 md:grid-cols-5 gap-3 mt-5">${info('Pannes',m.failures.length)}${info('Arrêt',fmtHours(m.downtime))}${info('Durée',fmtHours(m.repair))}${info('Coût',money(m.cost))}${info('MTTR',fmtHours(m.mttr))}</div></section>
+    <div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+      <section class="panel p-5"><h3 class="font-bold text-white">Défaillances récurrentes</h3><p class="text-xs text-slate-500 mt-1 mb-4">Détection simple sur l'historique V1. L'analyse avancée est prévue en V2.</p>
+        ${recurring.map((r,i)=>`<div class="panel-soft p-3 mb-2 flex items-center justify-between"><div><div class="font-semibold">${esc(r.name)}</div><div class="text-xs text-slate-500">Répétition détectée sur la période</div></div><span class="badge badge-red">${r.count} occurrences</span></div>`).join('')||'<div class="empty">Aucune répétition détectée avec les filtres actifs.</div>'}
+      </section>
+      <section class="panel p-5"><h3 class="font-bold text-white">Répartition des pannes</h3><div class="mt-4">${groups.map(g=>`<div class="mb-4"><div class="flex justify-between text-xs mb-1"><span>${esc(g.name)}</span><span>${g.count}</span></div><div class="bar-bg"><div class="bar" style="width:${Math.min(100,g.count/groups[0].count*100)}%"></div></div></div>`).join('')||'<div class="empty">Aucune panne.</div>'}</div></section>
+    </div>
+    <section class="panel p-5"><div class="flex justify-between mb-4"><h3 class="font-bold text-white">Historique filtré</h3><button class="btn btn-secondary" onclick="exportCSV()"><i data-lucide="download"></i> Exporter</button></div><div class="table-wrap"><table><thead><tr><th>Date</th><th>Équipement</th><th>Type</th><th>Défaillance</th><th>Cause</th><th>Action</th><th>Statut</th></tr></thead><tbody>${list.map(i=>`<tr><td>${fmtDate(i.date)}</td><td>${esc(i.equipmentId)}</td><td>${esc(i.type)}</td><td>${esc(i.failure)}</td><td>${esc(i.cause)}</td><td>${esc(i.action)}</td><td>${badge(i.status)}</td></tr>`).join('')||'<tr><td colspan="7"><div class="empty">Aucun résultat.</div></td></tr>'}</tbody></table></div></section>
+  </div>`;
+}
+
+function renderNotifications(){
+  const all=[...notifications];
+  preventive.filter(p=>p.status==='En retard').forEach(p=>all.push({id:'prev-'+p.id,type:'Retard',title:'Maintenance préventive en retard',message:`${p.equipmentId} — ${p.operation}`,date:p.plannedDate,read:false}));
+  interventions.filter(i=>['Validation','Compte rendu'].includes(i.status)).forEach(i=>all.push({id:'int-'+i.id,type:'Validation',title:'Intervention à traiter',message:`${i.equipmentId} — ${i.symptom}`,date:i.date,read:false}));
+  preventive.filter(p=>p.status==='À venir'&&p.plannedDate<=isoDate(new Date(Date.now()+3*86400000))).forEach(p=>all.push({id:'soon-'+p.id,type:'Échéance',title:'Préventif à venir',message:`${p.equipmentId} — ${p.operation}`,date:p.plannedDate,read:false}));
+  return `<section class="panel p-5"><div class="flex justify-between mb-5"><div><h2 class="font-bold text-white">Centre de notifications</h2><p class="text-xs text-slate-500 mt-1">${all.length} événement(s)</p></div><button class="btn btn-secondary" onclick="markAllRead()">Tout marquer comme lu</button></div>
+  <div class="space-y-2">${all.sort((a,b)=>String(b.date).localeCompare(String(a.date))).map(n=>`<div class="panel-soft p-4 flex gap-4 items-start"><div class="w-9 h-9 rounded-lg ${n.type==='Retard'?'bg-red-950 text-red-400':n.type==='Validation'?'bg-orange-950 text-orange-400':'bg-blue-950 text-blue-400'} flex items-center justify-center"><i data-lucide="${n.type==='Retard'?'triangle-alert':n.type==='Validation'?'clipboard-check':'calendar-clock'}"></i></div><div class="flex-1"><div class="font-semibold text-slate-200">${esc(n.title)}</div><div class="text-sm text-slate-400 mt-1">${esc(n.message)}</div><div class="text-[11px] text-slate-600 mt-2">${fmtDate(n.date)}</div></div>${!n.read?'<span class="badge badge-blue">Nouveau</span>':''}</div>`).join('')}</div></section>`;
+}
+function markAllRead(){notifications.forEach(n=>n.read=true);save();render();showToast('Notifications marquées comme lues.');}
+
+function renderAdmin(){
+  const perms={
+    'Technicien':['Consultation équipements','Créer / modifier interventions','Consulter préventif'],
+    'Responsable maintenance':['Pilotage','Planification','Validation','Prestataires'],
+    'Méthodes':['Analyse','Indicateurs','Amélioration','Recherche'],
+    'Administrateur':['Configuration','Utilisateurs','Droits','Toutes fonctions']
+  };
+  return `<div class="grid grid-cols-1 xl:grid-cols-2 gap-5">
+    <section class="panel p-5"><div class="flex justify-between mb-5"><div><h2 class="font-bold text-white">Utilisateurs</h2><p class="text-xs text-slate-500 mt-1">${users.length} utilisateur(s)</p></div><button class="btn btn-primary" onclick="openNewUser()"><i data-lucide="user-plus"></i> Ajouter</button></div>
+      <div class="space-y-2">${users.map(u=>`<div class="panel-soft p-3 flex justify-between items-center"><div><div class="font-semibold text-slate-200">${esc(u.name)}</div><div class="text-[11px] text-slate-500">${esc(u.email)}</div></div><div class="text-right">${badge(u.role)}<div class="mt-1">${badge(u.status)}</div></div></div>`).join('')}</div>
+    </section>
+    <section class="panel p-5"><h2 class="font-bold text-white mb-5">Rôles & droits</h2>${Object.entries(perms).map(([role,arr])=>`<div class="panel-soft p-4 mb-3"><div class="font-semibold text-slate-200">${esc(role)}</div><div class="flex flex-wrap gap-2 mt-3">${arr.map(x=>badge(x)).join('')}</div></div>`).join('')}</section>
+    <section class="panel p-5 xl:col-span-2"><h2 class="font-bold text-white">Configuration prototype</h2><p class="text-xs text-slate-500 mt-1">VITA V1 fonctionne ici en mode navigateur/localStorage. L'architecture cible pourra ensuite migrer vers une API et une base PostgreSQL.</p><div class="flex flex-wrap gap-2 mt-4"><button class="btn btn-secondary" onclick="resetDemo()"><i data-lucide="database-zap"></i> Réinitialiser les données démo</button><button class="btn btn-danger" onclick="clearAllData()"><i data-lucide="trash-2"></i> Effacer les données locales</button></div></section>
+  </div>`;
+}
+
+function openModal(content){document.getElementById('modal').innerHTML=content;document.getElementById('modal-backdrop').style.display='flex';lucide.createIcons();}
+function closeModal(){document.getElementById('modal-backdrop').style.display='none';document.getElementById('modal').innerHTML='';}
+function closeModalOnBackdrop(e){if(e.target.id==='modal-backdrop')closeModal();}
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.style.display='block';clearTimeout(window.__toast);window.__toast=setTimeout(()=>t.style.display='none',2800);}
+
+
+/* ============================================================
+   KIMPA BRIDGE — intégration VITA V1 → KIMPA 4.0
+   ============================================================ */
+let kimpaContext={view:'dashboard',equipmentId:null,dataset:[]};
+
+function openKimpaFromVita(view='dashboard',equipmentId=null){
+  kimpaContext={view,equipmentId,dataset:kimpaBuildDataset(view,equipmentId)};
+  state.view='kimpa'; state.selectedEquipment=null; state.selectedProvider=null; render();
+}
+
+function kimpaBuildDataset(view,equipmentId){
+  let rows=(view==='equipment'&&equipmentId)
+    ? interventions.filter(i=>i.equipmentId===equipmentId)
+    : filteredInterventions();
+  return rows.map(i=>({
+    id:i.id,date:i.date,time:i.time,equipment_id:i.equipmentId,
+    technician:i.technician,type:i.type,origin:i.origin,symptom:i.symptom,
+    failure:i.failure,cause:i.cause,action:i.action,parts:i.parts,
+    duration_h:Number(i.duration||0),downtime_h:Number(i.downtime||0),
+    cost_eur:Number(i.cost||0),status:i.status,provider_id:i.providerId,
+    comments:i.comments
+  }));
+}
+
+function kimpaQuality(df){
+  const issues=[];
+  if(!df.length) issues.push(['CRITIQUE','Le jeu de données est vide.']);
+  if(df.length<5) issues.push(['CRITIQUE',`${df.length} observation(s) : jeu trop petit.`]);
+  if(df.length){
+    Object.keys(df[0]).forEach(c=>{
+      const miss=df.filter(r=>r[c]===''||r[c]===null||r[c]===undefined).length;
+      if(miss/df.length>=.3) issues.push(['ATTENTION',`${c} contient ${Math.round(miss/df.length*100)}% de valeurs manquantes.`]);
+    });
+  }
+  return issues;
+}
+
+function kimpaSemantics(df){
+  if(!df.length)return[];
+  return Object.keys(df[0]).map(c=>{
+    const n=c.toLowerCase(); let role='Variable générale',conf=.30;
+    if(n.includes('date')||n==='time'){role='Variable temporelle';conf=.90}
+    else if(n.includes('id')||n.includes('equipment')){role='Identifiant potentiel';conf=.85}
+    else if(['failure','panne','defaillance','defaut','status','event'].some(x=>n.includes(x))){role='Événement / cible potentielle';conf=.85}
+    else if(['duration','duree','downtime','cost','cout'].some(x=>n.includes(x))){role='Variable quantitative';conf=.70}
+    else if(typeof df[0][c]==='number'){role='Variable quantitative';conf=.60}
+    else role='Variable catégorielle';
+    return {name:c,role,conf};
+  });
+}
+
+function kimpaStats(df){
+  const failures=df.filter(r=>r.type==='Corrective'&&r.failure&&r.failure!=='-');
+  const downtime=df.reduce((s,r)=>s+Number(r.downtime_h||0),0);
+  const repair=df.reduce((s,r)=>s+Number(r.duration_h||0),0);
+  const mttr=failures.length?repair/failures.length:0;
+  const cost=df.reduce((s,r)=>s+Number(r.cost_eur||0),0);
+  const failureMap={}; const eqMap={};
+  failures.forEach(r=>{failureMap[r.failure]=(failureMap[r.failure]||0)+1;eqMap[r.equipment_id]=(eqMap[r.equipment_id]||0)+1});
+  const pareto=Object.entries(failureMap).sort((a,b)=>b[1]-a[1]);
+  const recurrent=Object.entries(eqMap).filter(x=>x[1]>=2).sort((a,b)=>b[1]-a[1]);
+  const by={}; failures.forEach(r=>(by[r.equipment_id]??=[]).push(r.date));
+  const intervals=[];
+  Object.values(by).forEach(ds=>{ds.sort();for(let j=1;j<ds.length;j++){const h=(new Date(ds[j])-new Date(ds[j-1]))/36e5;if(h>=0)intervals.push(h)}})
+  const mtbf=intervals.length?intervals.reduce((a,b)=>a+b,0)/intervals.length:0;
+  return {failures,downtime,repair,mttr,cost,pareto,recurrent,mtbf};
+}
+
+function kimpaLeakage(df,target){
+  if(!target||!df.length)return[];
+  const kw=['failure','panne','defaillance','cause','action','diagnostic','reparation','remplacement','comment','description','downtime'];
+  return Object.keys(df[0]).filter(c=>c===target||kw.some(k=>c.toLowerCase().includes(k)));
+}
+
+function kimpaPayload(){
+  const df=kimpaContext.dataset;
+  const payload={
+    engine:'KIMPA',version:'4.0',source:'VITA',source_version:'V1',
+    context:{view:kimpaContext.view,equipment_id:kimpaContext.equipmentId,filters:state.filters,period:{from:state.filters.dateFrom||null,to:state.filters.dateTo||null}},
+    problem:document.getElementById('kimpa-problem')?.value||'Analyse du périmètre VITA',
+    objective:document.getElementById('kimpa-objective')?.value||'Identifier tendances, récurrences et facteurs associés',
+    confirmations:{
+      target:document.getElementById('kimpa-target')?.value||'',
+      study_unit:document.getElementById('kimpa-study')?.value||'equipment_id',
+      time_variable:document.getElementById('kimpa-time')?.value||'date'
+    },
+    dataset:df,generated_at:new Date().toISOString()
+  };
+  const a=document.createElement('a'),blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  a.href=URL.createObjectURL(blob);a.download=`KIMPA_from_VITA_${isoDate()}.json`;a.click();URL.revokeObjectURL(a.href);
+  showToast('Snapshot VITA → KIMPA exporté.');
+}
+
+function kimpaRun(){
+  const df=kimpaContext.dataset, s=kimpaStats(df), q=kimpaQuality(df);
+  const type=document.getElementById('kimpa-type').value;
+  const target=document.getElementById('kimpa-target').value;
+  let html='';
+  if(type==='Fiabilité'){
+    html=`<div class="grid grid-cols-2 xl:grid-cols-4 gap-3">${kpi('Observations',df.length,'Snapshot VITA','database')}${kpi('Pannes',s.failures.length,'Correctives','triangle-alert')}${kpi('MTTR',fmtHours(s.mttr),'Maintenabilité','timer')}${kpi('MTBF',s.mtbf?fmtHours(s.mtbf):'—','Intervalles disponibles','activity')}</div>
+    <div class="grid lg:grid-cols-2 gap-4 mt-4"><div class="panel-soft p-4"><b>Défaillances — Pareto</b>${s.pareto.map(x=>`<div class="mt-3"><div class="flex justify-between text-xs"><span>${esc(x[0])}</span><span>${x[1]}</span></div><div class="bar-bg mt-1"><div class="bar" style="width:${Math.min(100,x[1]/(s.pareto[0]?.[1]||1)*100)}%"></div></div></div>`).join('')||'<div class="empty">Aucune défaillance.</div>'}</div>
+    <div class="panel-soft p-4"><b>Récurrences</b>${s.recurrent.map(x=>`<div class="flex justify-between mt-3 text-sm"><span>${esc(x[0])}</span><b>${x[1]}</b></div>`).join('')||'<div class="text-slate-500 text-sm mt-3">Aucune récurrence ≥ 2.</div>'}</div></div>`;
+  }else if(type==='Diagnostic'){
+    const causes={};df.forEach(r=>{const c=r.cause||'-';causes[c]=(causes[c]||0)+1});
+    html=`<div class="panel-soft p-4"><b>Causes enregistrées dans VITA</b>${Object.entries(causes).sort((a,b)=>b[1]-a[1]).map(x=>`<div class="flex justify-between mt-3 text-sm"><span>${esc(x[0])}</span><b>${x[1]}</b></div>`).join('')}</div>`;
+  }else if(type==='Détection'){
+    html=`<div class="panel-soft p-4 border-amber-900/60"><b class="text-amber-300">Signaux détectés</b>${s.recurrent.map(x=>`<p class="mt-3 text-sm">⚠️ ${esc(x[0])} : ${x[1]} défaillances dans le périmètre.</p>`).join('')||'<p class="text-sm text-slate-500 mt-3">Aucune récurrence selon la règle actuelle.</p>'}${s.pareto[0]?`<p class="mt-3 text-sm">⚠️ Défaillance dominante : <b>${esc(s.pareto[0][0])}</b>.</p>`:''}</div>`;
+  }else if(type==='Prédiction'){
+    html=`<div class="panel-soft p-4 border-blue-900/60"><b class="text-blue-300">Préparation du modèle KIMPA</b><p class="text-sm text-slate-400 mt-2">${df.length<10?'Le dataset contient moins de 10 observations : validation train/test non exécutable de façon robuste.':'Le volume permet une tentative train/test.'}</p><p class="text-sm mt-3">${target?'Cible sélectionnée : <b>'+esc(target)+'</b>.':'Aucune cible sélectionnée.'}</p><p class="text-xs text-slate-500 mt-3">Le moteur ML complet (scikit-learn, train/test, métriques et coefficients) reste exécuté par l’application Python KIMPA. Cette couche HTML prépare et exporte exactement le contexte.</p></div>`;
+  }else{
+    const sem=kimpaSemantics(df);
+    html=`<div class="grid grid-cols-2 md:grid-cols-4 gap-3">${kpi('Observations',df.length,'Dataset','database')}${kpi('Variables',sem.length,'Sémantique','columns-3')}${kpi('Temps d’arrêt',fmtHours(s.downtime),'Cumul','clock-3')}${kpi('Coût',money(s.cost),'Maintenance','euro')}</div><div class="table-wrap mt-4"><table><thead><tr><th>Variable</th><th>Rôle</th><th>Confiance</th></tr></thead><tbody>${sem.map(x=>`<tr><td>${esc(x.name)}</td><td>${esc(x.role)}</td><td>${Math.round(x.conf*100)}%</td></tr>`).join('')}</tbody></table></div>`;
+  }
+  const quality=q.length?`<div class="panel-soft p-4 mt-4 border-amber-900/60"><b class="text-amber-300">Qualité des données</b>${q.map(x=>`<div class="text-sm mt-2">• ${esc(x[0])} — ${esc(x[1])}</div>`).join('')}</div>`:`<div class="panel-soft p-4 mt-4 border-emerald-900/60"><span class="text-emerald-300 text-sm">✓ Aucun problème critique détecté.</span></div>`;
+  const leak=target?`<div class="panel-soft p-4 mt-4"><b>Anti-leakage</b><div class="flex flex-wrap gap-2 mt-3">${kimpaLeakage(df,target).map(x=>`<span class="badge badge-gray">${esc(x)}</span>`).join('')}</div></div>`:'';
+  document.getElementById('kimpa-result').innerHTML=html+quality+leak;
+  document.getElementById('kimpa-status').textContent='Analyse exécutée';
+  lucide.createIcons();
+}
+
+function renderKimpa(){
+  const df=kimpaContext.dataset||[];
+  const eq=kimpaContext.equipmentId?getEquipment(kimpaContext.equipmentId):null;
+  const vars=Object.keys(df[0]||{});
+  const sem=kimpaSemantics(df);
+  const targets=sem.filter(x=>x.role.includes('cible')).map(x=>x.name).filter(x=>vars.includes(x));
+  const quality=kimpaQuality(df);
+  return `<div class="space-y-5">
+    <section class="panel p-5" style="background:linear-gradient(135deg,rgba(76,29,149,.16),rgba(30,64,175,.08));border-color:#4c1d95">
+      <div class="flex flex-col xl:flex-row xl:justify-between gap-4"><div><div class="flex items-center gap-2"><span class="text-2xl">🤖</span><h1 class="text-2xl font-black text-white">KIMPA</h1><span class="badge badge-blue">4.0</span><span class="badge badge-gray">VITA CONNECTED</span></div><p class="text-sm text-slate-400 mt-2">Méta-moteur d’ingénierie industrielle & PHM. VITA fournit le contexte et les données ; KIMPA les analyse.</p></div><div class="flex gap-2"><button class="btn btn-secondary" onclick="setView('dashboard')">← VITA</button><button class="btn btn-primary" onclick="kimpaPayload()"><i data-lucide="download"></i> Export JSON</button></div></div>
+    </section>
+    <section class="panel p-5"><div class="flex flex-wrap gap-2"><span class="badge badge-blue">Source : VITA V1</span><span class="badge badge-gray">Vue : ${esc(kimpaContext.view)}</span><span class="badge badge-gray">${df.length} observations</span>${eq?`<span class="badge badge-gray">${esc(eq.id)} — ${esc(eq.designation)}</span>`:''}</div><div class="grid md:grid-cols-4 gap-3 mt-4"><div class="panel-soft p-3"><div class="text-xs text-slate-500">Période</div><div class="text-sm mt-1">${esc(periodLabel())}</div></div><div class="panel-soft p-3"><div class="text-xs text-slate-500">Unité d’étude</div><div class="text-sm mt-1">equipment_id</div></div><div class="panel-soft p-3"><div class="text-xs text-slate-500">Variable temporelle</div><div class="text-sm mt-1">date</div></div><div class="panel-soft p-3"><div class="text-xs text-slate-500">Qualité</div><div class="text-sm mt-1">${quality.length?'<span class="text-amber-300">À vérifier</span>':'<span class="text-emerald-300">OK</span>'}</div></div></div></section>
+    <div class="grid xl:grid-cols-3 gap-5"><div class="xl:col-span-2 space-y-5">
+      <section class="panel p-5"><h2 class="font-bold text-white">Problème & objectif</h2><div class="grid md:grid-cols-2 gap-3 mt-4"><div><label class="text-xs text-slate-500">Problème</label><textarea id="kimpa-problem" class="input mt-1" rows="3">Analyser le périmètre maintenance sélectionné dans VITA.</textarea></div><div><label class="text-xs text-slate-500">Objectif</label><textarea id="kimpa-objective" class="input mt-1" rows="3">Identifier tendances, récurrences et facteurs associés.</textarea></div></div></section>
+      <section class="panel p-5"><h2 class="font-bold text-white">Configuration scientifique</h2><div class="grid md:grid-cols-3 gap-3 mt-4"><div><label class="text-xs text-slate-500">Analyse</label><select id="kimpa-type" class="input mt-1"><option>Description</option><option>Fiabilité</option><option>Diagnostic</option><option>Détection</option><option>Prédiction</option></select></div><div><label class="text-xs text-slate-500">Cible</label><select id="kimpa-target" class="input mt-1"><option value="">Aucune</option>${targets.map(x=>`<option value="${esc(x)}">${esc(x)}</option>`).join('')}</select></div><div><label class="text-xs text-slate-500">Unité d’étude</label><select id="kimpa-study" class="input mt-1"><option>equipment_id</option>${vars.filter(x=>x.includes('id')).map(x=>`<option>${esc(x)}</option>`).join('')}</select></div></div><div class="mt-3 md:w-1/3"><label class="text-xs text-slate-500">Variable temporelle</label><select id="kimpa-time" class="input mt-1"><option>date</option><option>time</option></select></div><button class="btn btn-primary mt-4" onclick="kimpaRun()"><i data-lucide="play"></i> Exécuter KIMPA</button><span id="kimpa-status" class="text-xs text-slate-500 ml-2">Prêt</span></section>
+      <section class="panel p-5"><h2 class="font-bold text-white">Résultats</h2><div id="kimpa-result" class="mt-4"><div class="empty">Lancez une analyse.</div></div></section>
+    </div><div class="space-y-5">
+      <section class="panel p-5"><h2 class="font-bold text-white">Pipeline KIMPA 4.0</h2><div class="space-y-3 mt-4 text-sm"><div class="panel-soft p-3"><b>01 · Ingestion</b><div class="text-xs text-slate-500">Snapshot depuis VITA</div></div><div class="panel-soft p-3"><b>02 · Nettoyage</b><div class="text-xs text-slate-500">Qualité / formats</div></div><div class="panel-soft p-3"><b>03 · Sémantique</b><div class="text-xs text-slate-500">${sem.length} variables caractérisées</div></div><div class="panel-soft p-3"><b>04 · Analyse</b><div class="text-xs text-slate-500">Descriptif / fiabilité / diagnostic / détection</div></div><div class="panel-soft p-3"><b>05 · ML scientifique</b><div class="text-xs text-slate-500">Train/Test + anti-leakage via KIMPA Python</div></div></div></section>
+      <section class="panel p-5"><h2 class="font-bold text-white">Retour vers VITA</h2><p class="text-xs text-slate-500 mt-2">KIMPA analyse ; VITA reste le système opérationnel.</p><div class="space-y-2 mt-4"><button class="btn btn-secondary w-full" onclick="setView('interventions')">Interventions</button><button class="btn btn-secondary w-full" onclick="setView('preventive')">Préventif</button><button class="btn btn-secondary w-full" onclick="setView('history')">Historique</button></div></section>
+    </div></div></div>`;
+}
+
+function openNewIntervention(defaultEq=''){
+  const eqOptions=equipment.map(e=>`<option value="${esc(e.id)}" ${e.id===defaultEq?'selected':''}>${esc(e.id)} — ${esc(e.designation)}</option>`).join('');
+  const provOptions='<option value="">Aucun</option>'+providers.map(p=>`<option value="${esc(p.id)}">${esc(p.name)}</option>`).join('');
+  openModal(`<form onsubmit="saveIntervention(event)" class="modal"><div class="p-5 border-b border-slate-800 flex justify-between"><div><div class="text-xs text-blue-400 font-bold">VITA V1</div><h2 class="text-xl font-bold text-white mt-1">Nouvelle intervention</h2><div class="text-xs text-slate-500 mt-1">Création d'un compte rendu structuré</div></div><button type="button" class="btn btn-ghost" onclick="closeModal()">✕</button></div>
+  <div class="p-5 space-y-5">
+    <div><div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">1. Identification</div><div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div><label class="text-xs text-slate-500">Équipement *</label><select name="equipmentId" class="input mt-1" required>${eqOptions}</select></div>
+      <div><label class="text-xs text-slate-500">Date *</label><input name="date" type="date" class="input mt-1" value="${isoDate()}" required></div>
+      <div><label class="text-xs text-slate-500">Heure</label><input name="time" type="time" class="input mt-1" value="08:00"></div>
+      <div><label class="text-xs text-slate-500">Technicien *</label><input name="technician" class="input mt-1" value="Alex" required></div>
+      <div><label class="text-xs text-slate-500">Type *</label><select name="type" class="input mt-1"><option>Corrective</option><option>Préventive</option><option>Améliorative</option></select></div>
+      <div><label class="text-xs text-slate-500">Origine</label><select name="origin" class="input mt-1"><option>Interne</option><option>Externe</option></select></div>
+      <div><label class="text-xs text-slate-500">Prestataire</label><select name="providerId" class="input mt-1">${provOptions}</select></div>
+      <div><label class="text-xs text-slate-500">Statut</label><select name="status" class="input mt-1"><option>Demande</option><option>Diagnostic</option><option>Planifiée</option><option>Intervention</option><option>Compte rendu</option><option>Validation</option><option selected>Clôturée</option></select></div>
+    </div></div>
+    <div><div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">2. Diagnostic</div><div class="grid grid-cols-1 md:grid-cols-2 gap-3">
+      <div><label class="text-xs text-slate-500">Symptôme *</label><input name="symptom" class="input mt-1" required></div>
+      <div><label class="text-xs text-slate-500">Défaillance</label><input name="failure" class="input mt-1"></div>
+      <div><label class="text-xs text-slate-500">Cause</label><input name="cause" class="input mt-1"></div>
+      <div><label class="text-xs text-slate-500">Action réalisée</label><input name="action" class="input mt-1"></div>
+    </div></div>
+    <div><div class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-3">3. Données de maintenance</div><div class="grid grid-cols-1 md:grid-cols-4 gap-3">
+      <div><label class="text-xs text-slate-500">Pièces</label><input name="parts" class="input mt-1"></div>
+      <div><label class="text-xs text-slate-500">Temps intervention (h)</label><input name="duration" type="number" step="0.1" min="0" class="input mt-1" value="1"></div>
+      <div><label class="text-xs text-slate-500">Temps arrêt (h)</label><input name="downtime" type="number" step="0.1" min="0" class="input mt-1" value="0"></div>
+      <div><label class="text-xs text-slate-500">Coût (€)</label><input name="cost" type="number" step="0.01" min="0" class="input mt-1" value="0"></div>
+    </div><div class="mt-3"><label class="text-xs text-slate-500">Commentaires</label><textarea name="comments" class="input mt-1" rows="3"></textarea></div></div>
+  </div>
+  <div class="p-5 border-t border-slate-800 flex justify-end gap-2"><button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary"><i data-lucide="save"></i> Enregistrer</button></div>
+  </form>`);
+}
+function saveIntervention(ev){
+  ev.preventDefault(); const f=new FormData(ev.target);
+  const item={id:'INT-'+String(Date.now()).slice(-6),date:f.get('date'),time:f.get('time'),equipmentId:f.get('equipmentId'),technician:f.get('technician'),type:f.get('type'),origin:f.get('origin'),symptom:f.get('symptom'),failure:f.get('failure')||'-',cause:f.get('cause')||'-',action:f.get('action')||'-',parts:f.get('parts')||'-',duration:Number(f.get('duration')||0),downtime:Number(f.get('downtime')||0),cost:Number(f.get('cost')||0),status:f.get('status'),providerId:f.get('providerId')||'',comments:f.get('comments')||''};
+  interventions.push(item);
+  if(item.status==='Validation'||item.status==='Compte rendu') notifications.push({id:'N-'+item.id,type:'Validation',title:'Intervention à traiter',message:`${item.equipmentId} — ${item.symptom}`,date:item.date,read:false});
+  save();closeModal();showToast('Intervention enregistrée dans VITA.');render();
+}
+
+function openNewEquipment(){
+  openModal(`<form onsubmit="saveEquipment(event)" class="modal"><div class="p-5 border-b border-slate-800 flex justify-between"><h2 class="text-xl font-bold text-white">Nouvel équipement</h2><button type="button" class="btn btn-ghost" onclick="closeModal()">✕</button></div>
+  <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+    ${field('id','Identifiant *','Ex. C10',true)}${field('designation','Désignation *','Ex. Convoyeur',true)}${field('brand','Marque','')} ${field('model','Modèle','')} ${field('serial','N° série','')}
+    ${field('site','Site','K3')}${field('workshop','Atelier','Produits élaborés')}${field('line','Ligne','C9')}${field('family','Famille','Convoyeur')}
+    <div><label class="text-xs text-slate-500">Criticité</label><select name="criticality" class="input mt-1"><option>Faible</option><option>Moyenne</option><option selected>Haute</option><option>Critique</option></select></div>
+    <div><label class="text-xs text-slate-500">État</label><select name="status" class="input mt-1"><option selected>En service</option><option>À l'arrêt</option><option>Hors service</option></select></div>
+  </div><div class="p-5 border-t border-slate-800 flex justify-end gap-2"><button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary">Créer l'équipement</button></div></form>`);
+}
+function field(name,label,placeholder='',required=false){return `<div><label class="text-xs text-slate-500">${label}</label><input name="${name}" class="input mt-1" placeholder="${placeholder}" ${required?'required':''}></div>`;}
+function saveEquipment(ev){
+  ev.preventDefault();const f=new FormData(ev.target),id=f.get('id');
+  if(equipment.some(e=>e.id===id)){showToast('Cet identifiant existe déjà.');return;}
+  equipment.push({id,designation:f.get('designation'),brand:f.get('brand'),model:f.get('model'),serial:f.get('serial'),site:f.get('site'),workshop:f.get('workshop'),line:f.get('line'),family:f.get('family'),criticality:f.get('criticality'),status:f.get('status'),location:f.get('line'),subassemblies:[],components:[],commissioning:isoDate()});
+  save();closeModal();showToast('Équipement ajouté.');render();
+}
+
+function openNewPreventive(){
+  openModal(`<form onsubmit="savePreventive(event)" class="modal"><div class="p-5 border-b border-slate-800 flex justify-between"><h2 class="text-xl font-bold text-white">Nouvelle tâche préventive</h2><button type="button" class="btn btn-ghost" onclick="closeModal()">✕</button></div>
+  <div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-3">
+    <div><label class="text-xs text-slate-500">Équipement *</label><select name="equipmentId" class="input mt-1" required>${equipment.map(e=>`<option value="${esc(e.id)}">${esc(e.id)} — ${esc(e.designation)}</option>`).join('')}</select></div>
+    ${field('operation','Opération *','Ex. Graissage convoyeur',true)}${field('frequency','Fréquence (jours) *','30',true)}${field('estimatedTime','Temps estimé (h)','1')}${field('manager','Responsable','Alex')}${field('plannedDate','Date prévue','','true')}
+  </div><div class="p-5 border-t border-slate-800 flex justify-end gap-2"><button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary">Créer la tâche</button></div></form>`);
+}
+function savePreventive(ev){
+  ev.preventDefault();const f=new FormData(ev.target),planned=f.get('plannedDate'),d=new Date(planned);d.setDate(d.getDate()+Number(f.get('frequency')||30));
+  preventive.push({id:'PREV-'+String(Date.now()).slice(-6),equipmentId:f.get('equipmentId'),operation:f.get('operation'),frequency:Number(f.get('frequency')),unit:'jours',estimatedTime:Number(f.get('estimatedTime')||0),manager:f.get('manager'),plannedDate:planned,completedDate:'',nextDue:isoDate(d),status:planned<isoDate()?'En retard':'À venir'});
+  save();closeModal();showToast('Tâche préventive créée.');render();
+}
+
+function openNewProvider(){
+  openModal(`<form onsubmit="saveProvider(event)" class="modal"><div class="p-5 border-b border-slate-800 flex justify-between"><h2 class="text-xl font-bold text-white">Nouveau prestataire</h2><button type="button" class="btn btn-ghost" onclick="closeModal()">✕</button></div><div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-3">${field('id','Identifiant *','Ex. Acme',true)}${field('name','Nom *','',true)}${field('domain','Domaine','')}${field('contact','Email','')}${field('phone','Téléphone','')}${field('sla','Délai cible (h)','48')}</div><div class="p-5 border-t border-slate-800 flex justify-end gap-2"><button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary">Ajouter</button></div></form>`);
+}
+function saveProvider(ev){
+  ev.preventDefault();const f=new FormData(ev.target);
+  providers.push({id:f.get('id'),name:f.get('name'),domain:f.get('domain'),contact:f.get('contact'),phone:f.get('phone'),sla:Number(f.get('sla')||48),notes:''});
+  save();closeModal();showToast('Prestataire ajouté.');render();
+}
+function openNewDocument(){
+  openModal(`<form onsubmit="saveDocument(event)" class="modal"><div class="p-5 border-b border-slate-800 flex justify-between"><h2 class="text-xl font-bold text-white">Ajouter un document</h2><button type="button" class="btn btn-ghost" onclick="closeModal()">✕</button></div><div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-3">${field('name','Nom *','',true)}<div><label class="text-xs text-slate-500">Type</label><select name="type" class="input mt-1"><option>Manuel constructeur</option><option>Procédure</option><option>Schéma</option><option>Plan</option><option>Photo</option><option>Gamme</option><option>Document technique</option></select></div><div><label class="text-xs text-slate-500">Équipement</label><select name="equipmentId" class="input mt-1">${equipment.map(e=>`<option value="${esc(e.id)}">${esc(e.id)}</option>`).join('')}</select></div>${field('version','Version','1.0')}</div><div class="p-5 border-t border-slate-800 flex justify-end gap-2"><button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary">Ajouter</button></div></form>`);
+}
+function saveDocument(ev){
+  ev.preventDefault();const f=new FormData(ev.target);
+  documents.push({id:'DOC-'+String(Date.now()).slice(-6),name:f.get('name'),type:f.get('type'),equipmentId:f.get('equipmentId'),version:f.get('version')||'1.0',date:isoDate(),author:'Utilisateur démo'});
+  save();closeModal();showToast('Document ajouté.');render();
+}
+function openNewUser(){
+  openModal(`<form onsubmit="saveUser(event)" class="modal"><div class="p-5 border-b border-slate-800 flex justify-between"><h2 class="text-xl font-bold text-white">Ajouter un utilisateur</h2><button type="button" class="btn btn-ghost" onclick="closeModal()">✕</button></div><div class="p-5 grid grid-cols-1 md:grid-cols-2 gap-3">${field('name','Nom *','',true)}${field('email','Email','') }<div><label class="text-xs text-slate-500">Rôle</label><select name="role" class="input mt-1"><option>Technicien</option><option>Responsable maintenance</option><option>Méthodes</option><option>Administrateur</option></select></div></div><div class="p-5 border-t border-slate-800 flex justify-end gap-2"><button type="button" class="btn btn-secondary" onclick="closeModal()">Annuler</button><button class="btn btn-primary">Créer</button></div></form>`);
+}
+function saveUser(ev){
+  ev.preventDefault();const f=new FormData(ev.target);
+  users.push({id:'USR-'+String(Date.now()).slice(-6),name:f.get('name'),role:f.get('role'),email:f.get('email'),status:'Actif'});save();closeModal();showToast('Utilisateur ajouté.');render();
+}
+function exportCSV(){
+  const list=filteredInterventions();
+  const header=['ID','Date','Heure','Equipement','Type','Origine','Technicien','Symptome','Defaillance','Cause','Action','Duree_h','Arret_h','Cout_EUR','Statut','Prestataire'];
+  const rows=list.map(i=>[i.id,i.date,i.time,i.equipmentId,i.type,i.origin,i.technician,i.symptom,i.failure,i.cause,i.action,i.duration,i.downtime,i.cost,i.status,providerName(i.providerId)]);
+  const csv=[header,...rows].map(r=>r.map(x=>`"${String(x??'').replace(/"/g,'""')}"`).join(';')).join('\\n');
+  const blob=new Blob([csv],{type:'text/csv;charset=utf-8;'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=`VITA_interventions_${isoDate()}.csv`;a.click();URL.revokeObjectURL(a.href);
+  showToast(`${list.length} intervention(s) exportée(s).`);
+}
+function resetDemo(){
+  if(!confirm('Réinitialiser VITA avec les données de démonstration ?'))return;
+  equipment=structuredClone(demoEquipment);interventions=structuredClone(demoInterventions);preventive=structuredClone(demoPreventive);providers=structuredClone(demoProviders);documents=structuredClone(demoDocuments);users=structuredClone(demoUsers);notifications=[];resetFilters();save();showToast('Données VITA réinitialisées.');render();
+}
+function clearAllData(){
+  if(!confirm('Effacer toutes les données locales VITA ?'))return;
+  Object.values(KEY).forEach(k=>localStorage.removeItem(k));
+  location.reload();
+}
+
+document.querySelectorAll('.nav-item').forEach(b=>b.addEventListener('click',()=>setView(b.dataset.view)));
+
+save();
+render();
+</script>
+</body>
+</html>
